@@ -8,6 +8,61 @@ interface
 			data : array[1..NMax] of AnsiString;
 			nEff : longint;
 		end;
+		bahanMentah = record
+			nama	: AnsiString;
+			harga	: longint;
+			durasi	: longint;
+		end;
+		bahanOlahan = record
+			nama	: AnsiString;
+			harga	: longint;
+			listBahan	: array[1..NMax] of AnsiString;
+			nEff 	: longint;
+		end;
+		resep = record
+			nama	: AnsiString;
+			harga	: longint;
+			listBahan	: array[1..NMax] of AnsiString;
+			nEff	: longint;
+		end;
+		daftarBMentah = record
+			data : array[1..NMax] of bahanMentah;
+			nEff : longint;
+		end;
+		daftarBOlahan = record
+			data : array[1..NMax] of bahanOlahan;
+			nEff : longint;
+		end;
+		listBMentah = record
+			nama : array[1..NMax] of AnsiString;
+			tanggal : array[1..NMax] of AnsiString;
+			jumlah : array[1..NMax] of AnsiString;
+			nEff : longint;
+		end;
+		listBOlahan = record
+			nama : array[1..NMax] of AnsiString;
+			tanggal : array[1..NMax] of AnsiString;
+			jumlah : array[1..NMax] of AnsiString;
+			nEff : longint;
+		end;
+		daftarResep = record
+			data : array[1..NMax] of resep;
+			nEff : longint;
+		end;
+		statusPengguna = record
+			nomor	: longint;
+			tanggal	: AnsiString;
+			jumHari	: longint;
+			jumEnergi : longint;
+			maksInv : longint;
+			totBMentahBeli	: longint;		
+			totBOlahBuat	: longint;
+			totBOlahJual	: longint;
+			totResepJual	: longint;
+			totPemasukan	: longint;
+			totPengeluaran	: longint;
+			totPendapatan	: longint;
+		end;
 	function parseString(s : AnsiString):miniArr;
 implementation
 	function parseString(s : AnsiString):miniArr;

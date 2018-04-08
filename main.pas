@@ -8,9 +8,11 @@ var
 	invBOlah	: listBOlahan;
 	dafRes		: daftarResep;
 	status		: statusPengguna;
-	hari,energi	: longint;
+	hari,energi,i	: longint;
 begin
-	while(hari <= 10) do begin
+	//load semua data
+	load(dafBMentah,dafBOlah,invBMentah,invBOlah,dafRes,status);
+	{while(hari <= 10) do begin
 	
-	end;
+	end;}
 end.

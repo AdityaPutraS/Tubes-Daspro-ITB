@@ -1,70 +1,15 @@
 unit sistem;
 //berisi fungsi untuk load dan save
 interface
-const
-	NMax = 100;
-type
-	bahanMentah = record
-		nama	: AnsiString;
-		harga	: longint;
-		durasi	: longint;
-	end;
-	bahanOlahan = record
-		nama	: AnsiString;
-		harga	: longint;
-		listBahan	: array[1..NMax] of AnsiString;
-		nEff 	: longint;
-	end;
-	resep = record
-		nama	: AnsiString;
-		harga	: longint;
-		listBahan	: array[1..NMax] of AnsiString;
-		nEff	: longint;
-	end;
-	daftarBMentah = record
-		data : array[1..NMax] of bahanMentah;
-		nEff : longint;
-	end;
-	daftarBOlahan = record
-		data : array[1..NMax] of bahanOlahan;
-		nEff : longint;
-	end;
-	listBMentah = record
-		nama : array[1..NMax] of AnsiString;
-		tanggal : array[1..NMax] of AnsiString;
-		jumlah : array[1..NMax] of AnsiString;
-		nEff : longint;
-	end;
-	listBOlahan = record
-		nama : array[1..NMax] of AnsiString;
-		tanggal : array[1..NMax] of AnsiString;
-		jumlah : array[1..NMax] of AnsiString;
-		nEff : longint;
-	end;
-	daftarResep = record
-		data : array[1..NMax] of resep;
-		nEff : longint;
-	end;
-	statusPengguna = record
-		nomor	: longint;
-		tanggal	: AnsiString;
-		jumHari	: longint;
-		jumEnergi : longint;
-		maksInv : longint;
-		totBMentahBeli	: longint;		
-		totBOlahBuat	: longint;
-		totBOlahJual	: longint;
-		totResepJual	: longint;
-		totPemasukan	: longint;
-		totPengeluaran	: longint;
-		totPendapatan	: longint;
-	end;
+uses tambahan,sysutils;
 	procedure loadDaftarBahanMentah(var dafBMentah : daftarBMentah);
 	procedure loadDaftarBahanOlahan(var dafBOlah : daftarBOlahan);
 	procedure loadInventoriBahanMentah(var invBMentah : listBMentah);
 	procedure loadInventoriBahanOlahan(var invBOlah : listBOlahan);
+	procedure loadDaftarResep(var dafRes : daftarResep);
+	procedure loadStatus(var status : statusPengguna);
+	procedure load(var dafBMentah : daftarBMentah;var dafBOlah : daftarBOlahan;var invBMentah : listBMentah;var invBOlah : listBOlahan;var dafRes : daftarResep;var status : statusPengguna);
 implementation
-	uses tambahan,sysutils;
 	procedure loadDaftarBahanMentah(var dafBMentah : daftarBMentah);
 	var
 		tempFile	: textFile;
@@ -73,7 +18,7 @@ implementation
 		bMentah		: bahanMentah;
 	begin
 		dafBMentah.nEff := 0;
-		Assign(tempFile, 'daftarBahanMentah.txt'); //buka file
+		Assign(tempFile, 'Data/daftarBahanMentah.txt'); //buka file
 		reset(tempFile);
 		//mulai load file ke array
 		while not eof(tempFile) do
@@ -98,7 +43,7 @@ implementation
 		bOlah		: bahanOlahan;
 	begin
 		dafBOlah.nEff := 0;
-		Assign(tempFile, 'daftarBahanOlahan.txt'); //buka file
+		Assign(tempFile, 'Data/daftarBahanOlahan.txt'); //buka file
 		reset(tempFile);
 		//mulai load file ke array
 		while not eof(tempFile) do
@@ -126,7 +71,7 @@ implementation
 		tempArr		: miniArr;
 	begin
 		invBMentah.nEff := 0;
-		Assign(tempFile, 'listInventoriMentah.txt'); //buka file
+		Assign(tempFile, 'Data/listInventoriMentah.txt'); //buka file
 		reset(tempFile);
 		//mulai load file ke array
 		while not eof(tempFile) do
@@ -148,7 +93,7 @@ implementation
 		tempArr		: miniArr;
 	begin
 		invBOlah.nEff := 0;
-		Assign(tempFile, 'listInventoriOlahan.txt'); //buka file
+		Assign(tempFile, 'Data/listInventoriOlahan.txt'); //buka file
 		reset(tempFile);
 		//mulai load file ke array
 		while not eof(tempFile) do
@@ -172,7 +117,7 @@ implementation
 		banyak, i	: longint;
 	begin
 		dafRes.nEff := 0;
-		Assign(tempFile, 'daftarResep.txt'); //buka file
+		Assign(tempFile, 'Data/daftarResep.txt'); //buka file
 		reset(tempFile);
 		//mulai load file ke array
 		while not eof(tempFile) do
@@ -193,6 +138,41 @@ implementation
 		end;
 		Close(tempFile);
 	end;
-	procedure
-		
+	procedure loadStatus(var status : statusPengguna);
+	var
+		tempFile	: textFile;
+		s 			: AnsiString;
+		tempArr		: miniArr;
+	begin
+		Assign(tempFile, 'Data/statusPengguna.txt'); //buka file
+		reset(tempFile);
+		//mulai load file ke array
+		while not eof(tempFile) do
+		begin
+			readln(tempFile,s);
+			tempArr := parseString(s);
+			status.nomor := StrToInt(tempArr.data[1]);
+			status.tanggal := tempArr.data[2];
+			status.jumHari := StrToInt(tempArr.data[3]);
+			status.jumEnergi := StrToInt(tempArr.data[4]);
+			status.maksInv := StrToInt(tempArr.data[5]);
+			status.totBMentahBeli := StrToInt(tempArr.data[6]);
+			status.totBOlahBuat := StrToInt(tempArr.data[7]);
+			status.totBOlahJual := StrToInt(tempArr.data[8]);
+			status.totResepJual := StrToInt(tempArr.data[9]);
+			status.totPemasukan := StrToInt(tempArr.data[10]);
+			status.totPengeluaran := StrToInt(tempArr.data[11]);
+			status.totPendapatan := StrToInt(tempArr.data[12]);
+		end;
+	end;
+	procedure load(var dafBMentah : daftarBMentah;var dafBOlah : daftarBOlahan;var invBMentah : listBMentah;var invBOlah : listBOlahan;var dafRes : daftarResep;var status : statusPengguna);
+	begin
+		loadDaftarBahanMentah(dafBMentah);
+		loadDaftarBahanOlahan(dafBOlah);
+		loadInventoriBahanMentah(invBMentah);
+		loadInventoriBahanOlahan(invBOlah);
+		loadDaftarResep(dafRes);
+		loadStatus(status);
+		writeln('> Sukses Meload Semua File Eksternal');
+	end;
 end.
