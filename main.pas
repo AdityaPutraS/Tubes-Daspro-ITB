@@ -15,4 +15,5 @@ begin
 	{while(hari <= 10) do begin
 	
 	end;}
+	save(dafBMentah,dafBOlah,invBMentah,invBOlah,dafRes,status);
 end.
