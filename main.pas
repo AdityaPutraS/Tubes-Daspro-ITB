@@ -1,12 +1,14 @@
 program main;
 //merupakan program utama dari Tubes Daspro
-uses sysutils, fitur, tambahan;
+uses sysutils, sistem, tambahan;
 var
-	dafBMentah, invMentah	: listMentah;
-	dafBOlah, invOlahan		: listOlahan;
-	dafRes					: listResep;
-	status					: statusPengguna;
-	hari,energi				: longint;
+	dafBMentah	: daftarBMentah;
+	dafBOlah	: daftarBOlahan;
+	invBMentah	: listBMentah;
+	invBOlah	: listBOlahan;
+	dafRes		: daftarResep;
+	status		: statusPengguna;
+	hari,energi	: longint;
 begin
 	while(hari <= 10) do begin
 	
