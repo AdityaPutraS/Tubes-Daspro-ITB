@@ -33,13 +33,7 @@ interface
 			data : array[1..NMax] of bahanOlahan;
 			nEff : longint;
 		end;
-		listBMentah = record
-			nama : array[1..NMax] of AnsiString;
-			tanggal : array[1..NMax] of AnsiString;
-			jumlah : array[1..NMax] of AnsiString;
-			nEff : longint;
-		end;
-		listBOlahan = record
+		listBahan = record
 			nama : array[1..NMax] of AnsiString;
 			tanggal : array[1..NMax] of AnsiString;
 			jumlah : array[1..NMax] of AnsiString;
@@ -64,6 +58,10 @@ interface
 			totPendapatan	: longint;
 		end;
 	function parseString(s : AnsiString):miniArr;
+	procedure delStrukDat(var arr:strukDat;x:longint);
+	procedure tambahHari(var tanggal:ansistring);
+	function isKabisat(tahun:integer):boolean;
+	procedure ambilHari(tanggal:ansistring;var sekarang:penanggalan);
 implementation
 	function parseString(s : AnsiString):miniArr;
 	//parseString memotong  string a1 | a2 | a3 | a4 | a5 menjadi array yang berisi [a1,a2,a3,a4,a5]
@@ -99,4 +97,65 @@ implementation
 		end;
 		parseString := temp;
 	end;
+	
+	procedure delStrukDat(var arr:strukDat;x:longint);
+	var
+		i:longint;
+	begin
+		for i:=x to high(arr)-1 do
+		begin
+			arr[i]:=arr[i+1];				
+		end;
+		SetLength(arr,length(arr)-1);		
+	end;
+	
+	function isKabisat(tahun:integer):boolean;
+	begin
+		isKabisat:= ((tahun mod 400)=0) or (((tahun mod 400)<>0) and ((tahun mod 100)<>0) and ((tahun mod 4)=0));
+	end;
+	
+	procedure tambahHari(var tanggal:ansistring);
+	var
+		sekarang:penanggalan;
+	begin	
+		ambilHari(tanggal,sekarang);
+			if (sekarang.h=31) and (sekarang.b=12) then
+			begin
+				sekarang.h:=1;
+				sekarang.b:=1;
+				sekarang.t+=1;
+			end	else if ((sekarang.h=31) and ((sekarang.b=1)or(sekarang.b=3)or(sekarang.b=5)or(sekarang.b=7)or(sekarang.b=8)or(sekarang.b=10)))
+				 or ((sekarang.h=30) and ((sekarang.b=4)or(sekarang.b=6)or(sekarang.b=9)or(sekarang.b=11)))
+				 or (isKabisat(sekarang.t) and (sekarang.b=2) and (sekarang.h=29))
+				 or ((isKabisat(sekarang.t)=false) and (sekarang.b=2) and (sekarang.h=28)) then
+			begin
+				sekarang.h:=1;
+				sekarang.b+=1;		
+			end else begin
+				sekarang.h+=1;
+			end;
+		tanggal:='';
+		if (sekarang.h<10) then tanggal+='0'+inttostr(sekarang.h)+'/' else tanggal+=inttostr(sekarang.h)+'/';
+		if (sekarang.b<10) then tanggal+='0'+inttostr(sekarang.b)+'/' else tanggal+=inttostr(sekarang.b)+'/';
+		if (sekarang.t<10) then tanggal+='000'+inttostr(sekarang.t) 
+		else if (sekarang.t<100) then tanggal+='00'+inttostr(sekarang.t)
+		else if (sekarang.t<1000) then tanggal+='0'+inttostr(sekarang.t) 
+		else tanggal+=inttostr(sekarang.t);
+	end;
+	
+	procedure ambilHari(tanggal:ansistring;var sekarang:penanggalan);
+	var 
+		temp:string;
+		i:integer;
+	begin
+		i:=0;
+		temp:='';
+			for i:=0 to length(tanggal) do 			//membuang '/' dari penanggalan
+			begin	
+			if (tanggal[i]<>'/') then temp+=tanggal[i];
+			end;
+		val((temp[2]+temp[3]),sekarang.h);				//bagian aneh perlu diteliti
+		val((temp[4]+temp[5]),sekarang.b);
+		val((temp[6]+temp[7]+temp[8]+temp[9]),sekarang.t);
+	end;	
 end.

@@ -6,16 +6,16 @@ uses tambahan,sysutils;
 	procedure saveDaftarBahanMentah(dafBMentah : daftarBMentah);
 	procedure loadDaftarBahanOlahan(var dafBOlah : daftarBOlahan);
 	procedure saveDaftarBahanOlahan(dafBOlah : daftarBOlahan);
-	procedure loadInventoriBahanMentah(var invBMentah : listBMentah);
-	procedure saveInventoriBahanMentah(invBMentah : listBMentah);
-	procedure loadInventoriBahanOlahan(var invBOlah : listBOlahan);
-	procedure saveInventoriBahanOlahan(invBOlah : listBOlahan);
+	procedure loadInventoriBahanMentah(var invBMentah : listBahan);
+	procedure saveInventoriBahanMentah(invBMentah : listBahan);
+	procedure loadInventoriBahanOlahan(var invBOlah : listBahan);
+	procedure saveInventoriBahanOlahan(invBOlah : listBahan);
 	procedure loadDaftarResep(var dafRes : daftarResep);
 	procedure saveDaftarResep(dafRes : daftarResep);
 	procedure loadStatus(var status : statusPengguna);
 	procedure saveStatus(status : statusPengguna);
-	procedure load(var dafBMentah : daftarBMentah;var dafBOlah : daftarBOlahan;var invBMentah : listBMentah;var invBOlah : listBOlahan;var dafRes : daftarResep;var status : statusPengguna);
-	procedure save(dafBMentah : daftarBMentah;dafBOlah : daftarBOlahan;invBMentah : listBMentah;invBOlah : listBOlahan;dafRes : daftarResep;status : statusPengguna);
+	procedure load(var dafBMentah : daftarBMentah;var dafBOlah : daftarBOlahan;var invBMentah : listBahan;var invBOlah : listBahan;var dafRes : daftarResep;var status : statusPengguna);
+	procedure save(dafBMentah : daftarBMentah;dafBOlah : daftarBOlahan;invBMentah : listBahan;invBOlah : listBahan;dafRes : daftarResep;status : statusPengguna);
 implementation
 	procedure loadDaftarBahanMentah(var dafBMentah : daftarBMentah);
 	var
@@ -106,7 +106,7 @@ implementation
 		end;
 		Close(tempFile);
 	end;
-	procedure loadInventoriBahanMentah(var invBMentah : listBMentah);
+	procedure loadInventoriBahanMentah(var invBMentah : listBahan);
 	var
 		tempFile	: textFile;
 		s 			: AnsiString;
@@ -128,7 +128,7 @@ implementation
 		end;
 		Close(tempFile);
 	end;
-	procedure saveInventoriBahanMentah(invBMentah : listBMentah);
+	procedure saveInventoriBahanMentah(invBMentah : listBahan);
 	var
 		tempFile	: textFile;
 		i			: longint;
@@ -142,7 +142,7 @@ implementation
 		end;
 		Close(tempFile);
 	end;
-	procedure loadInventoriBahanOlahan(var invBOlah : listBOlahan);
+	procedure loadInventoriBahanOlahan(var invBOlah : listBahan);
 	var
 		tempFile	: textFile;
 		s 			: AnsiString;
@@ -164,7 +164,7 @@ implementation
 		end;
 		Close(tempFile);
 	end;
-	procedure saveInventoriBahanOlahan(invBOlah : listBOlahan);
+	procedure saveInventoriBahanOlahan(invBOlah : listBahan);
 	var
 		tempFile	: textFile;
 		i			: longint;
@@ -266,7 +266,7 @@ implementation
 		writeln(tempFile,s);
 		Close(tempFile);
 	end;
-	procedure load(var dafBMentah : daftarBMentah;var dafBOlah : daftarBOlahan;var invBMentah : listBMentah;var invBOlah : listBOlahan;var dafRes : daftarResep;var status : statusPengguna);
+	procedure load(var dafBMentah : daftarBMentah;var dafBOlah : daftarBOlahan;var invBMentah : listBahan;var invBOlah : listBahan;var dafRes : daftarResep;var status : statusPengguna);
 	begin
 		loadDaftarBahanMentah(dafBMentah);
 		loadDaftarBahanOlahan(dafBOlah);
@@ -276,7 +276,7 @@ implementation
 		loadStatus(status);
 		writeln('> Sukses membaca semua data dari File Eksternal');
 	end;
-	procedure save(dafBMentah : daftarBMentah;dafBOlah : daftarBOlahan;invBMentah : listBMentah;invBOlah : listBOlahan;dafRes : daftarResep;status : statusPengguna);
+	procedure save(dafBMentah : daftarBMentah;dafBOlah : daftarBOlahan;invBMentah : listBahan;invBOlah : listBahan;dafRes : daftarResep;status : statusPengguna);
 	begin
 		saveDaftarBahanMentah(dafBMentah);
 		saveDaftarBahanOlahan(dafBOlah);
