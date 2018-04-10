@@ -1,76 +1,34 @@
 unit tambahan;
 
 interface
+	uses sysutils;
 	const
-	NMax = 100;
+		hargainventori = 100000;//harga yang dibutuhkan untuk upgrade inventori
 	type
-		miniArr = record
-			data : array[1..NMax] of AnsiString;
-			nEff : longint;
-		end;
-		bahanMentah = record
-			nama	: AnsiString;
-			harga	: longint;
-			durasi	: longint;
-		end;
-		bahanOlahan = record
-			nama	: AnsiString;
-			harga	: longint;
-			listBahan	: array[1..NMax] of AnsiString;
-			nEff 	: longint;
-		end;
-		resep = record
-			nama	: AnsiString;
-			harga	: longint;
-			listBahan	: array[1..NMax] of AnsiString;
-			nEff	: longint;
-		end;
-		daftarBMentah = record
-			data : array[1..NMax] of bahanMentah;
-			nEff : longint;
-		end;
-		daftarBOlahan = record
-			data : array[1..NMax] of bahanOlahan;
-			nEff : longint;
-		end;
-		listBahan = record
-			nama : array[1..NMax] of AnsiString;
-			tanggal : array[1..NMax] of AnsiString;
-			jumlah : array[1..NMax] of AnsiString;
-			nEff : longint;
-		end;
-		daftarResep = record
-			data : array[1..NMax] of resep;
-			nEff : longint;
-		end;
-		statusPengguna = record
-			nomor	: longint;
-			tanggal	: AnsiString;
-			jumHari	: longint;
-			jumEnergi : longint;
-			maksInv : longint;
-			totBMentahBeli	: longint;		
-			totBOlahBuat	: longint;
-			totBOlahJual	: longint;
-			totResepJual	: longint;
-			totPemasukan	: longint;
-			totPengeluaran	: longint;
-			totPendapatan	: longint;
+		miniArr = array of AnsiString;
+		strukDat = array of array of AnsiString;
+		penanggalan = record
+		h,b,t:integer;
 		end;
 	function parseString(s : AnsiString):miniArr;
-	procedure delStrukDat(var arr:strukDat;x:longint);
+	procedure delStrukDat(var arr : strukDat; pos : longint);
 	procedure tambahHari(var tanggal:ansistring);
 	function isKabisat(tahun:integer):boolean;
 	procedure ambilHari(tanggal:ansistring;var sekarang:penanggalan);
+	procedure urut(var list: strukDat);//mengurutkan data pada array
+	function isThere(x : string ; T : strukDat) : Boolean;
+	function hargaBahan (x : string ;T : strukDat) : longint;
+	
 implementation
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	function parseString(s : AnsiString):miniArr;
 	//parseString memotong  string a1 | a2 | a3 | a4 | a5 menjadi array yang berisi [a1,a2,a3,a4,a5]
 	var
 		temp : miniArr;
-		i,awalKata,banyakHuruf,panjang : integer;
+		i,j,awalKata,banyakHuruf,panjang : integer;
 	begin
 		//awal baris = i, awal kolom = j
-		i := 1; temp.nEff := 0;
+		i := 1; j := 1;
 		awalKata := 1; banyakHuruf := 1;
 		panjang := length(s); //length mengembalikan panjang string
 		//traversal dari i = 1 sampai akhir string, pake while buat jaga jaga aja
@@ -78,43 +36,74 @@ implementation
 			//jika karakter ke i adalah | maka potong string dari indeks (awalKata) sepanjang (banyakHuruf) lalu dimasukkan ke array bernama temp
 			if(s[i] = '|') then begin
 				//setLength berguna untuk mengatur panjang array dinamis, dalam kasus ini panjang temp diset menjadi j
-				temp.nEff += 1;
+				SetLength(temp,j);
 				//ini pake matematika, kenapa isi -1, karena sebelum | ada spasi, makanya dikurang 1
 				banyakHuruf := i-awalKata-1;
 				//copy syntaxnya Copy(s, i, n) outputya berupa string potongan dari s dari indeks ke-i dan panjang n huruf
-				temp.data[temp.nEff] := Copy(s,awalKata,banyakHuruf);
+				temp[j-1] := Copy(s,awalKata,banyakHuruf);
 				//naikan variable awal kata sebanyak 2, karena setelah | ada spasi lagi
 				awalKata := i+2;
+				j += 1;
 			end else begin
 				//cek jika sudah sampai di ujung, maka langsung potong string s dari awalKata sampai akhir, lalu simpann di array temp
 				if(i = panjang) then begin
-					temp.nEff += 1;
+					SetLength(temp,j);
 					banyakHuruf := i-awalKata+1;
-					temp.data[temp.nEff] := Copy(s,awalKata,banyakHuruf);
+					temp[j-1] := Copy(s,awalKata,banyakHuruf);
 				end;
 			end;
 			i += 1;
 		end;
 		parseString := temp;
 	end;
-	
-	procedure delStrukDat(var arr:strukDat;x:longint);
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	procedure delStrukDat(var arr : strukDat; pos : longint);
+	//menghapus 1 elemen dengan indeks pos untuk tipe data strukDat
+	//I.S : arr terdefinisi, terisi penuh
+	//F.S : elemen dengan indeks pos hilang dari arr
 	var
-		i:longint;
+		i : longint;
 	begin
-		for i:=x to high(arr)-1 do
-		begin
-			arr[i]:=arr[i+1];				
+		for i := pos to high(arr)-1 do begin
+			//geser semua elemen ke atas sebanyak 1 posisi
+			arr[i] := arr[i+1];
 		end;
-		SetLength(arr,length(arr)-1);		
+		//memotong array paling terakhir dengan memperpendek panjang array
+		setLength(arr, length(arr)-1);
 	end;
 	
+	procedure loadFileToArr(namaFile : AnsiString; var dat : strukDat);
+	//meload file bernama "namafile" lalu menyimpannya di variable dat
+	//I.S : namaFile terdeifinisi, dat kosong
+	//F.S : dat berisi data dari file eksternal namaFile.txt
+	var
+		tempFile : TextFile;
+		s : AnsiString;
+		i : integer;
+	begin
+		i := 1; //iterator
+		Assign(tempFile, namaFile); //buka file
+		reset(tempFile);
+		//mulai load file ke array
+		while not eof(tempFile) do
+		begin
+			SetLength(dat,i);
+			readln(tempFile, s);
+			dat[i-1] := parseString(s);
+			i += 1;
+		end;
+		Close(tempFile);
+	end;
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	function isKabisat(tahun:integer):boolean;
 	begin
 		isKabisat:= ((tahun mod 400)=0) or (((tahun mod 400)<>0) and ((tahun mod 100)<>0) and ((tahun mod 4)=0));
 	end;
-	
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	procedure tambahHari(var tanggal:ansistring);
+	//menambah hari sebanyak 1
+	//I.S : tanggal terdefinisi dan valid
+	//F.S : tanggal menjadi tanggal esok harinya
 	var
 		sekarang:penanggalan;
 	begin	
@@ -142,8 +131,11 @@ implementation
 		else if (sekarang.t<1000) then tanggal+='0'+inttostr(sekarang.t) 
 		else tanggal+=inttostr(sekarang.t);
 	end;
-	
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	procedure ambilHari(tanggal:ansistring;var sekarang:penanggalan);
+	//mengubah format tanggal dari string menjadi tipe data penanggalan agar bisa diproses
+	//I.S : tanggal terdefinisi dan format benar
+	//F.S : variable sekarang berisi tipe data penanggalan dari variable tanggal
 	var 
 		temp:string;
 		i:integer;
@@ -158,4 +150,81 @@ implementation
 		val((temp[4]+temp[5]),sekarang.b);
 		val((temp[6]+temp[7]+temp[8]+temp[9]),sekarang.t);
 	end;	
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	procedure urut(var list: strukDat);
+	//mengurutkan strukDat
+	//I.S : strukDat terdefinisi
+	//F.S : strukDat terurut sesuai kolom ke 0
+	var
+		i,j:integer;
+		temp : array of AnsiString;//variabel sementara untuk tukar
+		//algoritma
+	begin
+		//algoritma bubble sort
+		for i:= (length(list)-1) downto 1 do //lakukan n-1 kali dengan n jumlah data
+		begin
+			for j:=0 to (i-1) do //dicek untuk semua data sampai i-1
+			begin
+				if (list[j][0]>list[j+1][0]) then
+				begin //ini menukar jika di depan lebihbesar
+						temp:= list[j];
+						list[j] := list[j+1];
+						list[j+1] := temp;
+				end;
+			end;
+		end;
+	end;
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	function isThere(x : string; T : strukDat) : Boolean;
+	//fungsi ini digunakan untuk memastikan apakah nama bahan ada pada daftar resep
+	//fungsi ini juga digunakan untuk memastikan bahwa bahan yang di input dari pengguna ada pada file bahan mentah
+	//KAMUS LOKAL
+	var
+	i,neff : longint;
+	ada : boolean;
+	//ALGORITMA
+	begin
+		neff := High(T);
+		i:=0;
+		ada := false; //asumsi ga ada
+		while (i<=neff) and not(ada) do
+		begin
+			if (lowercase(x) = lowercase(T[i][0])) then
+			begin
+				ada:=True;
+			end;
+			i:=i+1;
+		end;
+		//return nilai
+		isThere := ada;
+	end;
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	function hargaBahan (x : string ; T : strukDat) : longint;
+	//x adalah nama bahan yang dicari
+	//fungsi ini digunakan untuk mencari harga dari bahan mentah, harga bahan mentah terdapat pada kolom 2 file bahan mentah
+	//asumsu bahan pada bahan mentah dan bahan olahan berbeda
+	//KAMUS LOKAL
+	var
+	i,neff : longint;
+	found : Boolean;
+	harga	: longint;
+	//ALGORITMA
+	begin
+		neff := High(T);
+		i:=0;
+		found := false;
+		harga := 0;
+		while (i<=neff) and not(found) do 
+		begin
+			if (lowercase(x) = lowercase(T[i][0])) then
+			begin
+				harga := StrToInt(T[i][1]); //memasukkan harga bahan mentah
+				found := True;
+			end;
+			i:=i+1;
+		end;
+		//return nilai
+		hargaBahan := harga;
+	end;
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 end.

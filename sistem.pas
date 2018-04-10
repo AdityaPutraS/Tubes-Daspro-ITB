@@ -1,289 +1,121 @@
 unit sistem;
-//berisi fungsi untuk load dan save
 interface
-uses tambahan,sysutils;
-	procedure loadDaftarBahanMentah(var dafBMentah : daftarBMentah);
-	procedure saveDaftarBahanMentah(dafBMentah : daftarBMentah);
-	procedure loadDaftarBahanOlahan(var dafBOlah : daftarBOlahan);
-	procedure saveDaftarBahanOlahan(dafBOlah : daftarBOlahan);
-	procedure loadInventoriBahanMentah(var invBMentah : listBahan);
-	procedure saveInventoriBahanMentah(invBMentah : listBahan);
-	procedure loadInventoriBahanOlahan(var invBOlah : listBahan);
-	procedure saveInventoriBahanOlahan(invBOlah : listBahan);
-	procedure loadDaftarResep(var dafRes : daftarResep);
-	procedure saveDaftarResep(dafRes : daftarResep);
-	procedure loadStatus(var status : statusPengguna);
-	procedure saveStatus(status : statusPengguna);
-	procedure load(var dafBMentah : daftarBMentah;var dafBOlah : daftarBOlahan;var invBMentah : listBahan;var invBOlah : listBahan;var dafRes : daftarResep;var status : statusPengguna);
-	procedure save(dafBMentah : daftarBMentah;dafBOlah : daftarBOlahan;invBMentah : listBahan;invBOlah : listBahan;dafRes : daftarResep;status : statusPengguna);
+	uses tambahan;
+	procedure loadFileToArr(namaFile : AnsiString; var dat : strukDat); //meload file dengan nama (namaFile) ke variable dat
+	procedure overWriteArrToFile(namaFile : AnsiString;dat : strukDat); //overwrite isi file dengan isi baru yaitu array dat
+	procedure load(nomor : longint;var daftarBahMentah, listInvMentah, daftarBahOlahan, listInvOlahan, daftarResep, status : strukDat);//meload semua data yang diperlukan
+	procedure loadStatus(status : strukDat;var nomorSim : longint;var tanggal : AnsiString;var hariLewat, energi, maksInv, totBMentahBeli, totBOlahanBuat, totBOlahanJual, totResepJual, totPemasukan, totPengeluaran, totUang : longint);
+	procedure save(nomor : longint;daftarBahMentah, listInvMentah, daftarBahOlahan, listInvOlahan, daftarResep, status : strukDat); //save semua data ke file nya masing masing
+	procedure saveStatus(var status : strukDat;nomorSim : longInt;tanggal : AnsiString;hariLewat, energi, maksInv, totBMentahBeli, totBOlahanBuat, totBOlahanJual, totResepJual, totPemasukan, totPengeluaran, totUang : longint);
 implementation
-	procedure loadDaftarBahanMentah(var dafBMentah : daftarBMentah);
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	procedure loadFileToArr(namaFile : AnsiString; var dat : strukDat);
+	//meload file bernama "namafile" lalu menyimpannya di variable dat
+	//I.S : namaFile terdeifinisi, dat kosong
+	//F.S : dat berisi data dari file eksternal namaFile.txt
 	var
-		tempFile	: textFile;
-		s 			: AnsiString;
-		tempArr		: miniArr;
-		bMentah		: bahanMentah;
+		tempFile : TextFile;
+		s : AnsiString;
+		i : integer;
 	begin
-		dafBMentah.nEff := 0;
-		Assign(tempFile, 'Data/daftarBahanMentah.txt'); //buka file
+		i := 1; //iterator
+		Assign(tempFile, namaFile); //buka file
 		reset(tempFile);
 		//mulai load file ke array
 		while not eof(tempFile) do
 		begin
-			//TODO : Cek apakah nEff < NMax
-			readln(tempFile,s);
-			tempArr := parseString(s);
-			bMentah.nama := tempArr.data[1];
-			bMentah.harga := StrToInt(tempArr.data[2]);
-			bMentah.durasi := StrToInt(tempArr.data[3]);
-			dafBMentah.nEff += 1;
-			dafBMentah.data[dafBMentah.nEff] := bMentah;
+			SetLength(dat,i);
+			readln(tempFile, s);
+			dat[i-1] := parseString(s);
+			i += 1;
 		end;
 		Close(tempFile);
 	end;
-	procedure saveDaftarBahanMentah(dafBMentah : daftarBMentah);
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	procedure overWriteArrToFile(namaFile : AnsiString; dat : strukDat);
+	//mengisi file dengan isi array, overwrite karena isi dari file dihapus dulu, baru diisi
+	//I.S : namaFile terdefinisi, dat terdefinisi
+	//F.s : namaFile.txt berisi data dari dat
 	var
-		tempFile	: textFile;
-		s			: AnsiString;
-		i			: longint;
-		bMentah		: bahanMentah;	
+		tempFile : TextFile;
+		i,j : longint;
 	begin
-		Assign(tempFile, 'Data/daftarBahanMentah.txt');
+		Assign(tempFile, namaFile);
 		rewrite(tempFile);
-		for i := 1 to dafBMentah.NEff do begin
-			bMentah := dafBMentah.data[i];
-			s := bMentah.nama + ' | ' + IntToStr(bMentah.harga) + ' | ' + IntToStr(bMentah.durasi);
-			writeln(tempFile, s);
-		end;
-		Close(tempFile);
-	end;
-	procedure loadDaftarBahanOlahan(var dafBOlah : daftarBOlahan);
-	var
-		tempFile	: textFile;
-		s 			: AnsiString;
-		tempArr		: miniArr;
-		banyak,i		: longint;
-		bOlah		: bahanOlahan;
-	begin
-		dafBOlah.nEff := 0;
-		Assign(tempFile, 'Data/daftarBahanOlahan.txt'); //buka file
-		reset(tempFile);
-		//mulai load file ke array
-		while not eof(tempFile) do
-		begin
-			//TODO : Cek apakah nEff < NMax
-			readln(tempFile,s);
-			tempArr := parseString(s);
-			bOlah.nama := tempArr.data[1];
-			bOlah.harga := StrToInt(tempArr.data[2]);
-			banyak := StrToInt(tempArr.data[3]);
-			bOlah.nEff := 0;
-			for i := 1 to banyak do begin
-				bOlah.nEff += 1;
-				bOlah.listBahan[bOlah.nEff] := tempArr.data[3+i];
+		//mulai masukan ke file
+		for i := 0 to High(dat) do begin
+			for j := 0 to High(dat[i])-1 do begin
+				write(tempFile, dat[i][j]);
+				write(tempFile, ' | ');
 			end;
-			dafBOlah.nEff += 1;
-			dafBOlah.data[dafBOlah.nEff] := bOlah;
+			writeln(tempFile, dat[i][High(dat[i])]);
 		end;
 		Close(tempFile);
 	end;
-	procedure saveDaftarBahanOlahan(dafBOlah : daftarBOlahan);
-	var
-		tempFile	: textFile;
-		s			: AnsiString;
-		i,j			: longint;
-		bOlah	: bahanOlahan;	
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	procedure load(nomor : longint;var daftarBahMentah, listInvMentah, daftarBahOlahan, listInvOlahan, daftarResep, status : strukDat);
+	//meload semua file yang dibutuhkan, lalu disimpan ke array masing masing
+	//I.S : daftarBahMentah,listInvMentah,daftarBahOlahan,listInvOlahan,daftarResep,status kosong
+	//F.S : semua strukDat tersebut terisi oleh data dari file eksternalnya masing masing
 	begin
-		Assign(tempFile, 'Data/daftarBahanMentah.txt');
-		rewrite(tempFile);
-		for i := 1 to dafBOlah.NEff do begin
-			bOlah := dafBOlah.data[i];
-			s := bOlah.nama + ' | ' + IntToStr(bOlah.harga) + ' | ' + IntToStr(bOlah.nEff);
-			for j := 1 to bOlah.nEff do begin
-				s := s + ' | ' + bOlah.listBahan[j];
-			end;
-			writeln(tempFile, s);
-		end;
-		Close(tempFile);
+		loadFileToArr('save/'+nomor+'/daftarBahanMentah.txt', daftarBahMentah);
+		loadFileToArr('save/'+nomor+'/listInventoriMentah.txt', listInvMentah);
+		loadFileToArr('save/'+nomor+'/daftarBahanOlahan.txt', daftarBahOlahan);
+		loadFileToArr('save/'+nomor+'/listInventoriOlahan.txt', listInvOlahan);
+		loadFileToArr('save/'+nomor+'/daftarResep.txt', daftarResep);
+		loadFileToArr('save/'+nomor+'/statusPengguna.txt',status);
 	end;
-	procedure loadInventoriBahanMentah(var invBMentah : listBahan);
-	var
-		tempFile	: textFile;
-		s 			: AnsiString;
-		tempArr		: miniArr;
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	procedure loadStatus(status : strukDat;var nomorSim : longint;var tanggal : AnsiString;var hariLewat, energi, maksInv, totBMentahBeli, totBOlahanBuat, totBOlahanJual, totResepJual, totPemasukan, totPengeluaran, totUang : longint);
+	//meload semua variable status seperti tanggal, maksInventori, energi awal, dll
+	//I.S : status terdefinisi, semua paramater seperti nomorSim, tanggal, harilewat, dll kosong
+	//F.S : semua parameter terdefinisi sesuai isi dari strukDat status terdeifinisi
 	begin
-		invBMentah.nEff := 0;
-		Assign(tempFile, 'Data/listInventoriMentah.txt'); //buka file
-		reset(tempFile);
-		//mulai load file ke array
-		while not eof(tempFile) do
-		begin
-			//TODO : Cek apakah nEff < NMax
-			readln(tempFile,s);
-			tempArr := parseString(s);
-			invBMentah.nEff += 1;
-			invBMentah.nama[invBMentah.nEff] := tempArr.data[1];
-			invBMentah.tanggal[invBMentah.nEff] := tempArr.data[2];
-			invBMentah.jumlah[invBMentah.nEff] := tempArr.data[3];
-		end;
-		Close(tempFile);
+	//urutannya mengikuti yang di file eksternal statusPengguna.txt
+		val(status[0][0],nomorSim);
+		tanggal := status[0][1];
+		val(status[0][2], hariLewat);
+		val(status[0][3], energi);
+		val(status[0][4], maksInv);
+		val(status[0][5], totBMentahBeli);
+		val(status[0][6], totBOlahanBuat);
+		val(status[0][7], totBOlahanJual);
+		val(status[0][8], totResepJual);
+		val(status[0][9], totPemasukan);
+		val(status[0][10], totPengeluaran);
+		val(status[0][11], totUang);
 	end;
-	procedure saveInventoriBahanMentah(invBMentah : listBahan);
-	var
-		tempFile	: textFile;
-		i			: longint;
-		s			: AnsiString;
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	procedure save(nomor : longint;daftarBahMentah, listInvMentah, daftarBahOlahan, listInvOlahan, daftarResep, status : strukDat);
+	//menyimpan semua isi array ke file eksternal nya masing masing
+	//I.S : daftarBahMentah, listInvMentah, daftarBahOlahan, listInvOlahan, daftarResep, status terdefinisi
+	//F.S : file eksternal berisi data dari masing masing strukDat
 	begin
-		Assign(tempFile, 'Data/listInventoriMentah.txt');
-		rewrite(tempFile);
-		for i := 1 to invBMentah.nEff do begin
-			s := invBMentah.nama[i] + ' | ' + invBMentah.tanggal[i] + ' | ' + invBMentah.jumlah[i];
-			writeln(tempFile,s);
-		end;
-		Close(tempFile);
+		overWriteArrToFile('save/'+nomor+'/daftarBahanMentah.txt', daftarBahMentah);
+		overWriteArrToFile('save/'+nomor+'/listInventoriMentah.txt', listInvMentah);
+		overWriteArrToFile('save/'+nomor+'/daftarBahanOlahan.txt', daftarBahOlahan);
+		overWriteArrToFile('save/'+nomor+'/listInventoriOlahan.txt', listInvOlahan);
+		overWriteArrToFile('save/'+nomor+'/daftarResep.txt', daftarResep);
+		overWriteArrToFile('save/'+nomor+'/statusPengguna.txt',status);
 	end;
-	procedure loadInventoriBahanOlahan(var invBOlah : listBahan);
-	var
-		tempFile	: textFile;
-		s 			: AnsiString;
-		tempArr		: miniArr;
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	procedure saveStatus(var status : strukDat;nomorSim : longInt;tanggal : AnsiString;hariLewat, energi, maksInv, totBMentahBeli, totBOlahanBuat, totBOlahanJual, totResepJual, totPemasukan, totPengeluaran, totUang : longint);
+	//menyimpan semua variable status ke array status
+	//I.S : semua parameter terdefinisi
+	//F.S : strukDat status terisi data baru dari parameter
 	begin
-		invBOlah.nEff := 0;
-		Assign(tempFile, 'Data/listInventoriOlahan.txt'); //buka file
-		reset(tempFile);
-		//mulai load file ke array
-		while not eof(tempFile) do
-		begin
-			//TODO : Cek apakah nEff < NMax
-			readln(tempFile,s);
-			tempArr := parseString(s);
-			invBOlah.nEff += 1;
-			invBOlah.nama[invBOlah.nEff] := tempArr.data[1];
-			invBOlah.tanggal[invBOlah.nEff] := tempArr.data[2];
-			invBOlah.jumlah[invBOlah.nEff] := tempArr.data[3];
-		end;
-		Close(tempFile);
+		str(nomorSim, status[0][0]);
+		status[0][1] := tanggal;
+		str(hariLewat, status[0][2]);
+		str(energi, status[0][3]);
+		str(maksInv, status[0][4]);
+		str(totBMentahBeli, status[0][5]);
+		str(totBOlahanBuat, status[0][6]);
+		str(totBOlahanJual, status[0][7]);
+		str(totResepJual, status[0][8]);
+		str(totPemasukan, status[0][9]);
+		str(totPengeluaran, status[0][10]);
+		str(totUang, status[0][11]);
 	end;
-	procedure saveInventoriBahanOlahan(invBOlah : listBahan);
-	var
-		tempFile	: textFile;
-		i			: longint;
-		s			: AnsiString;
-	begin
-		Assign(tempFile, 'Data/listInventoriOlahan.txt');
-		rewrite(tempFile);
-		for i := 1 to invBOlah.nEff do begin
-			s := invBOlah.nama[i] + ' | ' + invBOlah.tanggal[i] + ' | ' + invBOlah.jumlah[i];
-			writeln(tempFile,s);
-		end;
-		Close(tempFile);
-	end;
-	procedure loadDaftarResep(var dafRes : daftarResep);
-	var
-		tempFile	: textFile;
-		s 			: AnsiString;
-		tempArr		: miniArr;
-		res			: resep;
-		banyak, i	: longint;
-	begin
-		dafRes.nEff := 0;
-		Assign(tempFile, 'Data/daftarResep.txt'); //buka file
-		reset(tempFile);
-		//mulai load file ke array
-		while not eof(tempFile) do
-		begin
-			//TODO : Cek apakah nEff < NMax
-			readln(tempFile,s);
-			tempArr := parseString(s);
-			res.nama := tempArr.data[1];
-			res.harga := StrToInt(tempArr.data[2]);
-			banyak := StrToInt(tempArr.data[3]);
-			res.nEff := 0;
-			for i := 1 to banyak do begin
-				res.nEff += 1;
-				res.listBahan[res.nEff] := tempArr.data[3+i];
-			end;
-			dafRes.nEff += 1;
-			dafRes.data[dafRes.nEff] := res;
-		end;
-		Close(tempFile);
-	end;
-	procedure saveDaftarResep(dafRes : daftarResep);
-	var
-		tempFile	: textFile;
-		i,j			: longint;
-		res			: resep;
-		s			: AnsiString;
-	begin
-		Assign(tempFile, 'Data/daftarResep.txt');
-		rewrite(tempFile);
-		for i := 1 to dafRes.nEff do begin
-			res := dafRes.data[i];
-			s := res.nama + ' | ' + IntToStr(res.harga) + ' | ' + IntToStr(res.nEff);
-			for j := 1 to res.nEff do begin
-				s := s + ' | ' + res.listBahan[j];
-			end;
-			writeln(tempFile,s);
-		end;
-		Close(tempFile);
-	end;
-	procedure loadStatus(var status : statusPengguna);
-	var
-		tempFile	: textFile;
-		s 			: AnsiString;
-		tempArr		: miniArr;
-	begin
-		Assign(tempFile, 'Data/statusPengguna.txt'); //buka file
-		reset(tempFile);
-		//mulai load file ke array
-		while not eof(tempFile) do
-		begin
-			readln(tempFile,s);
-			tempArr := parseString(s);
-			status.nomor := StrToInt(tempArr.data[1]);
-			status.tanggal := tempArr.data[2];
-			status.jumHari := StrToInt(tempArr.data[3]);
-			status.jumEnergi := StrToInt(tempArr.data[4]);
-			status.maksInv := StrToInt(tempArr.data[5]);
-			status.totBMentahBeli := StrToInt(tempArr.data[6]);
-			status.totBOlahBuat := StrToInt(tempArr.data[7]);
-			status.totBOlahJual := StrToInt(tempArr.data[8]);
-			status.totResepJual := StrToInt(tempArr.data[9]);
-			status.totPemasukan := StrToInt(tempArr.data[10]);
-			status.totPengeluaran := StrToInt(tempArr.data[11]);
-			status.totPendapatan := StrToInt(tempArr.data[12]);
-		end;
-	end;
-	procedure saveStatus(status : statusPengguna);
-	var
-		tempFile	: textFile;
-		s			: AnsiString;
-	begin
-		Assign(tempFile, 'Data/statusPengguna.txt');
-		rewrite(tempFile);
-		s := IntToStr(status.nomor) + ' | ' + status.tanggal + ' | ' + IntToStr(status.jumHari) + ' | ' + IntToStr(status.jumEnergi) + ' | ' + IntToStr(status.maksInv);
-		s := s + ' | ' + IntToStr(status.totBMentahBeli) + ' | ' + IntToStr(status.totBOlahBuat) + ' | ' + IntToStr(status.totBOlahJual) + ' | ' + IntToStr(status.totResepJual) + ' | ' + IntToStr(status.totPemasukan) + ' | ' + IntToStr(status.totPengeluaran) + ' | ' + IntToStr(status.totPendapatan); 
-		writeln(tempFile,s);
-		Close(tempFile);
-	end;
-	procedure load(var dafBMentah : daftarBMentah;var dafBOlah : daftarBOlahan;var invBMentah : listBahan;var invBOlah : listBahan;var dafRes : daftarResep;var status : statusPengguna);
-	begin
-		loadDaftarBahanMentah(dafBMentah);
-		loadDaftarBahanOlahan(dafBOlah);
-		loadInventoriBahanMentah(invBMentah);
-		loadInventoriBahanOlahan(invBOlah);
-		loadDaftarResep(dafRes);
-		loadStatus(status);
-		writeln('> Sukses membaca semua data dari File Eksternal');
-	end;
-	procedure save(dafBMentah : daftarBMentah;dafBOlah : daftarBOlahan;invBMentah : listBahan;invBOlah : listBahan;dafRes : daftarResep;status : statusPengguna);
-	begin
-		saveDaftarBahanMentah(dafBMentah);
-		saveDaftarBahanOlahan(dafBOlah);
-		saveInventoriBahanMentah(invBMentah);
-		saveInventoriBahanOlahan(invBOlah);
-		saveDaftarResep(dafRes);
-		saveStatus(status);
-		writeln('> Sukses menyimpan semua data ke File Eksternal');
-	end;
+
 end.
