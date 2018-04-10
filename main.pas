@@ -3,6 +3,7 @@ uses fitur,tambahan,sistem,sysutils;
 const
 	banyakSimulasi = 3;
 var
+	nomor : longint;
 	nomorSim, hariLewat, energi, maksInv, totBMentahBeli, totBOlahanBuat, totBOlahanJual, totResepJual, totPemasukan, totPengeluaran, totUang : longint;
 	sekarang : penanggalan;
 	daftarBahMentah, listInvMentah, daftarBahOlahan, listInvOlahan, daftarResep, status : strukDat;
@@ -13,7 +14,7 @@ begin
 	write('> Masukkan No. Simulasi : '); readln(nomor);
 	if((nomor > 0) and (nomor < banyakSimulasi)) then 
 	begin
-		load(nomor,daftarBahMentah, listInvMentah, daftarBahOlahan, listInvOlahan, daftarResep, status);
+		load(IntToStr(nomor),daftarBahMentah, listInvMentah, daftarBahOlahan, listInvOlahan, daftarResep, status);
 		//load semua variable status yang diperlukan
 		loadStatus(status, nomorSim,tanggal, hariLewat, energi, maksInv, totBMentahBeli, totBOlahanBuat, totBOlahanJual, totResepJual, totPemasukan, totPengeluaran, totUang);
 		sudahTidur:=false;
@@ -23,12 +24,12 @@ begin
 				write('> '); readln(input);
 				input := LowerCase(input);//normalisasi input dengan mengubahnya menjadi huruf kecil semua
 				case input of
-					'belibahan' : beliBahan(daftarBahMentah,listInvMentah,listInvOlahan,maksInv,totBMentahBeli,totPengeluaran,tanggal);
+					'belibahan' : beliBahan(daftarBahMentah,listInvMentah,listInvOlahan,maksInv,totBMentahBeli,totPengeluaran,energi, tanggal);
 					'save'		: begin
 								  //save semua variable status ke array status
 								  saveStatus(status, nomorSim,tanggal, hariLewat, energi, maksInv, totBMentahBeli, totBOlahanBuat, totBOlahanJual, totResepJual, totPemasukan, totPengeluaran, totUang);
 								  //save semua array ke file eksternal
-								  save(nomor, daftarBahMentah, listInvMentah, daftarBahOlahan, listInvOlahan, daftarResep, status);
+								  save(IntToStr(nomor), daftarBahMentah, listInvMentah, daftarBahOlahan, listInvOlahan, daftarResep, status);
 								  end;
 					'cariresep' : cariresep(daftarResep);
 					'tidur'		: tidur(tanggal,hariLewat,energi,daftarBahMentah,listInvMentah,listInvOlahan,sudahTidur);

@@ -2,17 +2,17 @@ unit fitur;
 
 interface
 	uses tambahan, sysutils;
-	procedure beliBahan(var daftarBahMentah,listInvMentah :strukDat;listInvOlahan : strukDat;maksInv : longint;var totBMentahBeli,totPengeluaran : longint;tanggal : AnsiString);
+	procedure beliBahan(var daftarBahMentah,listInvMentah :strukDat;listInvOlahan : strukDat;maksInv : longint;var totBMentahBeli,totPengeluaran,energi : longint;tanggal : AnsiString);
 	procedure lihatInventori (listInvMentah, listInvOlahan: strukDat);// menampilkan data daftar bahan mentah dan bahan olahan yang tersedia di inventori saat ini terurut membesar menurut nama bahan
 	procedure lihatResep (daftarResep: strukDat); //menampilkan data daftar resep yang tersedia beserta penyusunnya dengan terurut membesar
-	procedure istirahat (var countIst:integer); //menambah energi sebanyak 1 buah, maksimum istirahat 6 kali sehari, energi maksimum 10
-	procedure makan (var countMakan:integer); //menambah energi sebanyak 3 buah, maksimum makan 3 kali sehari, energi maksimum 10 
+	procedure istirahat(var countIst:integer;var energi : longint);//menambah energi sebanyak 1 buah, maksimum istirahat 6 kali sehari, energi maksimum 10
+	procedure makan (var countMakan, energi : longint); //menambah energi sebanyak 3 buah, maksimum makan 3 kali sehari, energi maksimum 10 
 	procedure cariResep(daftarResep:strukDat);
 	procedure tidur(var tanggal:AnsiString;var hariLewat,energi:longint;daftarBahMentah:strukDat;var listInvMentah,listInvOlahan:strukDat;var sudahTidur:boolean);
 	
 implementation
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////	
-	procedure beliBahan(var daftarBahMentah,listInvMentah :strukDat;listInvOlahan : strukDat;maksInv : longint;var totBMentahBeli,totPengeluaran : longint;tanggal : AnsiString);
+	procedure beliBahan(var daftarBahMentah,listInvMentah :strukDat;listInvOlahan : strukDat;maksInv : longint;var totBMentahBeli,totPengeluaran,energi : longint;tanggal : AnsiString);
 	//beli bahan sesuai spek soal.
 	var
 		namaB : AnsiString;
@@ -294,7 +294,7 @@ implementation
 		energi -= 1;
 	end;
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	procedure upgradeinventori (var energi,maksInv,totUang : longint;);
+	procedure upgradeinventori (var energi,maksInv,totUang : longint);
 	begin
 		//verifikasi apakah energi cukup
 		if energi = 0 then

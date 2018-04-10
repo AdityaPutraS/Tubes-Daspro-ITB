@@ -3,9 +3,9 @@ interface
 	uses tambahan;
 	procedure loadFileToArr(namaFile : AnsiString; var dat : strukDat); //meload file dengan nama (namaFile) ke variable dat
 	procedure overWriteArrToFile(namaFile : AnsiString;dat : strukDat); //overwrite isi file dengan isi baru yaitu array dat
-	procedure load(nomor : longint;var daftarBahMentah, listInvMentah, daftarBahOlahan, listInvOlahan, daftarResep, status : strukDat);//meload semua data yang diperlukan
+	procedure load(nomor : AnsiString;var daftarBahMentah, listInvMentah, daftarBahOlahan, listInvOlahan, daftarResep, status : strukDat);//meload semua data yang diperlukan
 	procedure loadStatus(status : strukDat;var nomorSim : longint;var tanggal : AnsiString;var hariLewat, energi, maksInv, totBMentahBeli, totBOlahanBuat, totBOlahanJual, totResepJual, totPemasukan, totPengeluaran, totUang : longint);
-	procedure save(nomor : longint;daftarBahMentah, listInvMentah, daftarBahOlahan, listInvOlahan, daftarResep, status : strukDat); //save semua data ke file nya masing masing
+	procedure save(nomor : AnsiString;daftarBahMentah, listInvMentah, daftarBahOlahan, listInvOlahan, daftarResep, status : strukDat); //save semua data ke file nya masing masing
 	procedure saveStatus(var status : strukDat;nomorSim : longInt;tanggal : AnsiString;hariLewat, energi, maksInv, totBMentahBeli, totBOlahanBuat, totBOlahanJual, totResepJual, totPemasukan, totPengeluaran, totUang : longint);
 implementation
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -53,7 +53,7 @@ implementation
 		Close(tempFile);
 	end;
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	procedure load(nomor : longint;var daftarBahMentah, listInvMentah, daftarBahOlahan, listInvOlahan, daftarResep, status : strukDat);
+	procedure load(nomor : AnsiString;var daftarBahMentah, listInvMentah, daftarBahOlahan, listInvOlahan, daftarResep, status : strukDat);
 	//meload semua file yang dibutuhkan, lalu disimpan ke array masing masing
 	//I.S : daftarBahMentah,listInvMentah,daftarBahOlahan,listInvOlahan,daftarResep,status kosong
 	//F.S : semua strukDat tersebut terisi oleh data dari file eksternalnya masing masing
@@ -86,7 +86,7 @@ implementation
 		val(status[0][11], totUang);
 	end;
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	procedure save(nomor : longint;daftarBahMentah, listInvMentah, daftarBahOlahan, listInvOlahan, daftarResep, status : strukDat);
+	procedure save(nomor : AnsiString;daftarBahMentah, listInvMentah, daftarBahOlahan, listInvOlahan, daftarResep, status : strukDat);
 	//menyimpan semua isi array ke file eksternal nya masing masing
 	//I.S : daftarBahMentah, listInvMentah, daftarBahOlahan, listInvOlahan, daftarResep, status terdefinisi
 	//F.S : file eksternal berisi data dari masing masing strukDat

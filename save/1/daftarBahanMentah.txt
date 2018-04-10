@@ -1,6 +1,6 @@
 Daging Sapi | 5000 | 10
 Kangkung | 1000 | 10
-Lada | 200 | 100
+Lada | 200 | 80
 Bawang Putih | 500 | 30
 Air | 500 | 100
 Es Krim | 2000 | 10
