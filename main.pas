@@ -35,9 +35,10 @@ begin
 					'tidur'		: tidur(tanggal,hariLewat,energi,daftarBahMentah,listInvMentah,listInvOlahan,sudahTidur);
 				end;
 		//		//energi berkurang setelah melakukan kegiatan
-		//		energi -= 1;
+		//		energi -= 1; <- sebaiknya diimplementasi langsung di fungsinya
 			end else begin
 				//hari yang telah dilewati bertambah 1 & mengisi ulang energi menjadi 10
+				writeln('> Hari telah berganti.');
 				hariLewat += 1;
 				energi := 10;
 			end;

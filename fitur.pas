@@ -9,7 +9,8 @@ interface
 	procedure makan (var countMakan, energi : longint); //menambah energi sebanyak 3 buah, maksimum makan 3 kali sehari, energi maksimum 10 
 	procedure cariResep(daftarResep:strukDat);
 	procedure tidur(var tanggal:AnsiString;var hariLewat,energi:longint;daftarBahMentah:strukDat;var listInvMentah,listInvOlahan:strukDat;var sudahTidur:boolean);
-	
+	procedure tambahresep (var energi : longint;var daftarResep : strukDat;daftarBahMentah,daftarBahOlahan : strukDat);	
+	procedure upgradeinventori (var energi,maksInv,totUang : longint);
 implementation
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////	
 	procedure beliBahan(var daftarBahMentah,listInvMentah :strukDat;listInvOlahan : strukDat;maksInv : longint;var totBMentahBeli,totPengeluaran,energi : longint;tanggal : AnsiString);

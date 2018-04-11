@@ -72,6 +72,8 @@ implementation
 	//F.S : semua parameter terdefinisi sesuai isi dari strukDat status terdeifinisi
 	begin
 	//urutannya mengikuti yang di file eksternal statusPengguna.txt
+	//TODO :
+	//	- Tambahin error code
 		val(status[0][0],nomorSim);
 		tanggal := status[0][1];
 		val(status[0][2], hariLewat);
@@ -104,6 +106,8 @@ implementation
 	//I.S : semua parameter terdefinisi
 	//F.S : strukDat status terisi data baru dari parameter
 	begin
+	//TODO :
+	//	- Tambahin error code
 		str(nomorSim, status[0][0]);
 		status[0][1] := tanggal;
 		str(hariLewat, status[0][2]);
