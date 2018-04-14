@@ -17,6 +17,7 @@ interface
 	procedure ambilHari(tanggal:ansistring;var sekarang:penanggalan);
 	procedure urut(var list: strukDat);//mengurutkan data pada array
 	function isThere(x : string ; T : strukDat) : Boolean;
+	function idxStrukDat(x : string; dat : strukDat;kolom : longint) : longint;
 	function hargaBahan (x : string ;T : strukDat) : longint;
 	
 implementation
@@ -192,11 +193,31 @@ implementation
 			if (lowercase(x) = lowercase(T[i][0])) then
 			begin
 				ada:=True;
-			end;
+			end else begin
 			i:=i+1;
+			end;
 		end;
 		//return nilai
 		isThere := ada;
+	end;
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	function idxStrukDat(x : string; dat : strukDat;kolom : longint) : longint;
+	var
+		i,hasil : longint;
+		found : boolean;
+	begin
+		hasil := -1;
+		i := low(dat);
+		found := false;
+		while( (i <= high(dat)) and not(found) ) do begin
+			if( lowerCase(dat[i][kolom]) = lowerCase(x) ) then begin
+				hasil := i;
+				found := true;
+			end else begin
+				i += 1;
+			end;
+		end;
+		idxStrukDat := hasil;
 	end;
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	function hargaBahan (x : string ; T : strukDat) : longint;
