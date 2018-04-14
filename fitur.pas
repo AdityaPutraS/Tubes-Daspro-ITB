@@ -425,6 +425,7 @@ procedure jualOlahan (var energi, totPemasukan,totBOlahanJual,totUang : longint;
 			writeln('Energi tidak mencukupi');
 		end;
 	end;
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 procedure jualResep (var energi, totPemasukan,totResepJual,totUang : longint; var listInvOlahan, listInvMentah : strukDat; daftarResep : strukDat);
 	var
 		i,j, idxBahan : longint;
@@ -473,4 +474,5 @@ procedure jualResep (var energi, totPemasukan,totResepJual,totUang : longint; va
 			writeln('Energi tidak mencukupi');
 		end;
 	end;
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 end.

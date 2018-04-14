@@ -1,7 +1,7 @@
 unit tambahan;
 
 interface
-	uses sysutils;
+	uses sysutils,math;
 	const
 		hargainventori = 100000;//harga yang dibutuhkan untuk upgrade inventori
 	type
@@ -19,7 +19,8 @@ interface
 	function isThere(x : string ; T : strukDat) : Boolean;
 	function idxStrukDat(x : string; dat : strukDat;kolom : longint) : longint;
 	function hargaBahan (x : string ;T : strukDat) : longint;
-	function sugesti(s : string) : AnsiString;
+	function sugesti(s : AnsiString) : AnsiString;
+	//function sugestiDP(s : AnsiString) : AnsiString;
 implementation
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	function parseString(s : AnsiString):miniArr;
@@ -248,7 +249,7 @@ implementation
 		hargaBahan := harga;
 	end;
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	function sugesti(s : string) : AnsiString;
+	function sugesti(s : AnsiString) : AnsiString;
 	var
 		i,j,k,maksSimilar,similar,idxSimilar: longint;
 		command : miniArr;
@@ -264,33 +265,25 @@ implementation
 		idxSimilar := -1;
 		maksSimilar := 3;
 		for i := low(command) to high(command) do begin
-			if(length(s) > length(command[i])) then begin
-				for j := 0 to (length(s)-length(command[i])) do begin
-					similar := 0;
-					for k := 1 to length(command[i]) do begin
+			for j := 0 to max(length(s),length(command[i]))-3 do begin
+				similar := 0;
+				if(length(s) > length(command[i])) then begin
+					for k := 1 to min(length(s)-j,length(command[i])) do begin
 						if(command[i][k] = s[k+j]) then begin
 							similar += 1;
 						end;
 					end;
-					if(similar >= maksSimilar) then begin
-						idxSimilar := i;
-						//debug = writeln(command[idxSimilar],' mirip dengan ',s,' dengan nilai : ',similar);
-						maksSimilar := similar;
-					end;
-				end;
-			end else begin
-				for j := 0 to (length(command[i])-length(s)) do begin
-					similar := 0;
-					for k := 1 to length(s) do begin
+				end else begin
+					for k := 1 to min(length(command[i])-j,length(s)) do begin
 						if(command[i][k+j] = s[k]) then begin
-							similar += 1;
+						similar += 1;
 						end;
 					end;
-					if(similar >= maksSimilar) then begin
+				end;
+				if(similar >= maksSimilar) then begin
 						idxSimilar := i;
-						//debug = writeln(command[idxSimilar],' mirip dengan ',s,' dengan nilai : ',similar);
+						//writeln(command[idxSimilar],' mirip dengan ',s,' dengan nilai : ',similar,' dan j : ',j);
 						maksSimilar := similar;
-					end;
 				end;
 			end;
 		end;
@@ -301,4 +294,59 @@ implementation
 		end;
 	end;
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	{function sugestiDP(s : AnsiString): AnsiString;
+	var
+		dp : array of array of integer;
+		command : miniArr;
+		i,j,k, maksSimilar, similar,idxSimilar: longint;
+	begin
+		//inisialisasi command
+		setLength(command,15);
+		command[0] := 'belibahan';command[1] := 'save';command[2] := 'cariresep';
+		command[3] := 'tidur';command[4] := 'lihatinventori';command[5] := 'lihatresep';
+		command[6] := 'istirahat';command[7] := 'makan';command[8] := 'tambahresep';
+		command[9] := 'upgradeinventori';command[10] := 'lihatstatistik';command[11] := 'olahbahan';
+		command[12] := 'jualbahan';command[13] := 'jualresep';command[14] := 'stopsimulasi';
+		//mulai algoritma LCS
+		maksSimilar := 3;
+		idxSimilar := -1;
+		for i := low(command) to high(command) do begin
+			//init array dp
+			setLength(dp,length(s));
+			for j := 0 to high(dp) do begin
+				setLength(dp[j], length(command[i]));
+			end;
+			
+			for j := 0 to length(s)-1 do begin
+				dp[j][0] := 0;
+			end;
+			for j := 0 to length(command[i])-1 do begin
+				dp[0][j] := 0;
+			end;
+			//mulai dp
+			for j := 1 to length(s)-1 do begin
+				for k := 1 to length(command[i]) do begin
+					if(s[j] = command[i][k]) then begin
+						dp[j][k] := dp[j-1][k-1] + 1;
+					end else begin
+						if(dp[j][k-1] > dp[j-1][k]) then begin
+							dp[j][k] := dp[j][k-1];
+						end else begin
+							dp[j][k] := dp[j-1][k];
+						end;
+					end;
+				end;
+			end;
+			similar := dp[length(s)-1][length(command[i])-1];
+			if(similar >= maksSimilar) then begin
+				idxSimilar := i;
+				maksSimilar := similar;
+			end;
+		end;
+		if(not(idxSimilar = -1)) then begin
+			sugestiDP := command[idxSimilar];
+		end else begin
+			sugestiDP := 'tidak ada';
+		end;
+	end;}
 end.
