@@ -19,7 +19,7 @@ interface
 	function isThere(x : string ; T : strukDat) : Boolean;
 	function idxStrukDat(x : string; dat : strukDat;kolom : longint) : longint;
 	function hargaBahan (x : string ;T : strukDat) : longint;
-	
+	function sugesti(s : string) : AnsiString;
 implementation
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	function parseString(s : AnsiString):miniArr;
@@ -246,6 +246,59 @@ implementation
 		end;
 		//return nilai
 		hargaBahan := harga;
+	end;
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	function sugesti(s : string) : AnsiString;
+	var
+		i,j,k,maksSimilar,similar,idxSimilar: longint;
+		command : miniArr;
+	begin
+		//inisialisasi command
+		setLength(command,15);
+		command[0] := 'belibahan';command[1] := 'save';command[2] := 'cariresep';
+		command[3] := 'tidur';command[4] := 'lihatinventori';command[5] := 'lihatresep';
+		command[6] := 'istirahat';command[7] := 'makan';command[8] := 'tambahresep';
+		command[9] := 'upgradeinventori';command[10] := 'lihatstatistik';command[11] := 'olahbahan';
+		command[12] := 'jualbahan';command[13] := 'jualresep';command[14] := 'stopsimulasi';
+		//mulai algoritma
+		idxSimilar := -1;
+		maksSimilar := 3;
+		for i := low(command) to high(command) do begin
+			if(length(s) > length(command[i])) then begin
+				for j := 0 to (length(s)-length(command[i])) do begin
+					similar := 0;
+					for k := 1 to length(command[i]) do begin
+						if(command[i][k] = s[k+j]) then begin
+							similar += 1;
+						end;
+					end;
+					if(similar >= maksSimilar) then begin
+						idxSimilar := i;
+						//debug = writeln(command[idxSimilar],' mirip dengan ',s,' dengan nilai : ',similar);
+						maksSimilar := similar;
+					end;
+				end;
+			end else begin
+				for j := 0 to (length(command[i])-length(s)) do begin
+					similar := 0;
+					for k := 1 to length(s) do begin
+						if(command[i][k+j] = s[k]) then begin
+							similar += 1;
+						end;
+					end;
+					if(similar >= maksSimilar) then begin
+						idxSimilar := i;
+						//debug = writeln(command[idxSimilar],' mirip dengan ',s,' dengan nilai : ',similar);
+						maksSimilar := similar;
+					end;
+				end;
+			end;
+		end;
+		if(not(idxSimilar = -1)) then begin
+			sugesti := command[idxSimilar];
+		end else begin
+			sugesti := 'tidak ada';
+		end;
 	end;
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 end.

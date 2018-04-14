@@ -6,7 +6,7 @@ var
 	nomor,countIst,countMakan : longint;
 	nomorSim, hariLewat, energi, maksInv, totBMentahBeli, totBOlahanBuat, totBOlahanJual, totResepJual, totPemasukan, totPengeluaran, totUang : longint;
 	daftarBahMentah, listInvMentah, daftarBahOlahan, listInvOlahan, daftarResep, status : strukDat;
-	input,tanggal,inputLuar : AnsiString;
+	input,tanggal,inputLuar,sug : AnsiString;
 	sudahTidur : Boolean;
 begin
 	inputLuar := '';
@@ -55,6 +55,15 @@ begin
 											  save(IntToStr(nomor), daftarBahMentah, listInvMentah, daftarBahOlahan, listInvOlahan, daftarResep, status);
 											  input := 'cukupsudahhentikansimulasiini';
 											  end;
+						else begin
+							sug := sugesti(input);
+							write('Perintah ',input,' tidak ditemukan.');
+							if(not(sug = 'tidak ada')) then begin
+								writeln('Mungkin yang anda maksud : ',sug);
+							end else begin
+								writeln;
+							end;
+						end;
 					end;
 				end else begin
 					//hari yang telah dilewati bertambah 1 & mengisi ulang energi menjadi 10
