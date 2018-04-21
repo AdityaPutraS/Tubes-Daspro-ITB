@@ -57,7 +57,7 @@ begin
 									'jualresep'			: jualResep (energi, totPemasukan,totResepJual,totUang,listInvOlahan, listInvMentah, daftarResep,sudahTidur);
 									'makan'				: makan (countMakan,energi,sudahTidur);
 									'istirahat'			: istirahat(countIst,energi,sudahTidur);
-									'tidur'				: tidur(tanggal,hariLewat,energi,daftarBahMentah,listInvMentah,listInvOlahan,sudahTidur); //harus diubah sistemnya, tanggal harusnya ga berubah, cuman hariLewat yang berubah
+									'tidur'				: tidur(tanggal,hariLewat,energi,daftarBahMentah,listInvMentah,listInvOlahan,sudahTidur,countIst,countMakan); //harus diubah sistemnya, tanggal harusnya ga berubah, cuman hariLewat yang berubah
 									'lihatstatistik'	: lihatStatistik(status,listInvMentah,listInvOlahan,sudahTidur);
 									'lihatinventori'	: lihatInventori(listInvMentah, listInvOlahan,sudahTidur);
 									'lihatresep'		: lihatResep(daftarResep,sudahTidur);
@@ -84,7 +84,7 @@ begin
 									input := LowerCase(input);
 										if (input<>'tidur') then writeln('Energi habis, Anda hanya dapat tidur.');
 								until(input='tidur');
-								tidur(tanggal,hariLewat,energi,daftarBahMentah,listInvMentah,listInvOlahan,sudahTidur);
+								tidur(tanggal,hariLewat,energi,daftarBahMentah,listInvMentah,listInvOlahan,sudahTidur,countIst,countMakan);
 								writeln('Hari telah berganti.');
 							end;
 						until( (input = 'stopsimulasi') or (hariLewat = 10) );

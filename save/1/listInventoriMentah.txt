@@ -1,9 +1,9 @@
-Air | 10/01/2018 | 31
-Bawang Putih | 4/12/2017 | 100
+Air | 22/04/2018 | 31
+Bawang Putih | 21/04/2018 | 100
 Beras | 12/01/2018 | 20
 Beras | 23/01/2018 | 10
-Daging Sapi | 24/02/2018 | 2
-Daging Sapi | 23/02/2018 | 1
+Daging Sapi | 22/04/2018 | 2
+Daging Sapi | 21/04/2018 | 1
 Kecap | 12/02/2018 | 9
 Kecap | 14/02/2018 | 1
 Lada | 14/02/2018 | 20

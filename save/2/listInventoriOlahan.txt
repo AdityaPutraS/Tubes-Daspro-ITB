@@ -1,3 +1,2 @@
-Nasi Goreng | 10/2/2018 | 34
-Nasi Putih | 13/02/2018 | 1
-Sosis | 24/2/2018 | 100
+Nasi Putih | 23/02/2018 | 1
+Sosis | 22/2/2018 | 100

@@ -8,13 +8,14 @@ interface
 	procedure istirahat(var countIst:longint;var energi : longint;var sudahTidur:boolean);//menambah energi sebanyak 1 buah, maksimum istirahat 6 kali sehari, energi maksimum 10
 	procedure makan (var countMakan, energi : longint;var sudahTidur:boolean); //menambah energi sebanyak 3 buah, maksimum makan 3 kali sehari, energi maksimum 10 
 	procedure cariResep(daftarResep:strukDat;var sudahTidur:boolean);
-	procedure tidur(var tanggal:AnsiString;var hariLewat,energi:longint;daftarBahMentah:strukDat;var listInvMentah,listInvOlahan:strukDat;var sudahTidur:boolean);
+	procedure tidur(tanggal:AnsiString;var hariLewat,energi:longint;daftarBahMentah:strukDat;var listInvMentah,listInvOlahan:strukDat;var sudahTidur:boolean;var countIst,countMakan:longint);
 	procedure tambahresep (var daftarResep : strukDat;daftarBahMentah,daftarBahOlahan : strukDat;var sudahTidur:boolean);	
 	procedure upgradeinventori (maksInv,totUang : longint;var sudahTidur:boolean);
 	procedure lihatStatistik(status,listInvMentah,listInvOlahan:strukdat;var sudahTidur:boolean);
 	procedure olahBahan(var energi, totBOlahanBuat:longint;maksInv:longint;daftarBahOlahan,daftarBahMentah:strukDat;var listInvMentah,listInvOlahan:strukDat;tanggal:ansiString;hariLewat : longint;var sudahTidur:boolean);
 	procedure jualOlahan (var energi, totPemasukan,totBOlahanJual,totUang : longint; var listInvOlahan : strukDat; daftarBahOlahan : strukDat;var sudahTidur:boolean);
 	procedure jualResep (var energi, totPemasukan,totResepJual,totUang : longint; var listInvOlahan, listInvMentah : strukDat; daftarResep : strukDat;var sudahTidur:boolean);
+	procedure restock(hariLewat : longint; var daftarBahMentah : strukDat);
 implementation
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////	
 	procedure beliBahan(var daftarBahMentah,listInvMentah :strukDat;listInvOlahan : strukDat;maksInv : longint;var totBMentahBeli,totPengeluaran,energi,totUang : longint;tanggal : AnsiString;hariLewat : longint;var sudahTidur:boolean);
@@ -52,7 +53,7 @@ implementation
 								listInvMentah[indeksInv][0] := daftarBahMentah[i][0];
 								//menghitung tanggal sekarang
 									tanggalSekarang := tanggal;
-									for j := 0 to hariLewat do begin
+									for j := 1 to hariLewat do begin
 										tambahHari(tanggalSekarang);
 									end;
 								listInvMentah[indeksInv][1] := tanggalSekarang;
@@ -138,6 +139,7 @@ implementation
 			energi += 1;
 			countIst += 1;
 			sudahTidur:=false;
+			writeln('Istirahat berhasil, energi bertambah 1, energi sekarang ',energi);
 		end else begin //countIst >= 6 atau energi > 10
 			if (countIst = 6)then
 			begin
@@ -156,6 +158,7 @@ implementation
 			energi:= energi + 3;
 			countMakan:= countMakan +1;
 			sudahTidur:=false;
+			writeln('Makan berhasil, energi bertambah 3, energi sekarang ',energi);
 		end else begin //countMakan > 3 atau energi > 7
 			if (countMakan = 3 ) then
 			begin
@@ -191,34 +194,65 @@ implementation
 		sudahTidur:=false;
 	end;
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	procedure tidur(var tanggal:AnsiString;var hariLewat,energi:longint;daftarBahMentah:strukDat;var listInvMentah,listInvOlahan:strukDat;var sudahTidur:boolean);
+	procedure tidur(tanggal:AnsiString;var hariLewat,energi:longint;daftarBahMentah:strukDat;var listInvMentah,listInvOlahan:strukDat;var sudahTidur:boolean;var countIst,countMakan:longint);
 	var
-		tglb,sekarang:penanggalan;
-		i,j,durasi:longint;
+		i,j,k,durasi,nEff:longint;
+		temp,tanggalSekarang:ansiString;
 	begin
-		if sudahTidur then
+		if(sudahTidur)then //validasi apakah sudah pernah tidur
 		begin
 			writeln('Tidur gagal karena Anda baru saja tidur.');
 		end else begin
-			ambilHari(tanggal,sekarang);
-			for i:=0 to high(listInvOlahan) do
-			begin
-				ambilHari(listInvOlahan[i][1],tglb);
-				if ((sekarang.h-tglb.h)>=3) then delStrukDat(listInvOlahan,i)
-			end;
-			for i:=0 to high(listInvMentah) do
-			begin
-				for j:=0 to high(daftarBahMentah) do 
-				begin
-					if (daftarBahMentah[j][0]=listInvMentah[i][0]) then durasi:=strtoint(daftarBahMentah[j][2]);
+			tanggalSekarang := tanggal;
+				for k := 1 to hariLewat do begin
+					tambahHari(tanggalSekarang);
 				end;
-				ambilHari(listInvMentah[i][1],tglb);
-				if ((sekarang.h-tglb.h)>=durasi) then delStrukDat(listInvMentah,i);
+			//membuang semua bahan Olahan yang kadaluarsa
+			i := 0; nEff := high(listInvOlahan);
+			while(i <= nEff) do
+			begin
+				temp:=listInvOlahan[i][1]; //menyimpan tanggal buat olahan di temp
+				for k:=1 to 3 do tambahHari(temp);
+				if (temp=tanggalSekarang) then begin //membandingkan temp dengan tanggal sekarang
+					delStrukDat(listInvOlahan,i);
+					nEff -= 1;
+				end else begin
+					i +=1 ;
+				end;
 			end;
+			//membuang semua bahan Mentah yang kadaluarsa
+			i := 0;	nEff := high(listInvMentah);
+			while(i <= nEff) do
+			begin
+				durasi := idxStrukDat(listInvMentah[i][0],daftarBahMentah,0); //durasi berisi indeksnya
+				writeln('mengecek ',listInvMentah[i][0]);
+				if(not(durasi = -1)) then begin
+					//bahan ditemukan di daftarBahMentah
+					durasi := StrToInt(daftarBahMentah[durasi][2]); //durasi berisi durasi dari bahan mentahnya
+					temp := listInvMentah[i][1];
+						for k := 1 to (durasi) do begin
+							tambahHari(temp);
+						end;
+					if(temp = tanggalSekarang) then begin
+						delStrukDat(listInvMentah,i);
+						nEff -= 1;
+					end else begin
+						i += 1;
+					end;
+				end else begin
+					writeln(listInvMentah[i][0],' merupakan item illegal karena tidak ada di daftar Bahan Mentah.');
+				end;
+			end;
+			//merestock daftar bahan mentah, pengecekan apakah sekarang harus di restock atau tidak dilakukan dalam prosedur restock
+			restock(hariLewat,daftarBahMentah);
+			//update variable
 			hariLewat+=1;
 			energi:=10;
 			sudahTidur:=true;
-			tambahHari(tanggal);
+			countIst:=0;
+			countMakan:=0;
+			//pesan kepada user
+			writeln('Hari telah berganti.');
 		end;
 	end;
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -302,41 +336,31 @@ implementation
 		begin
 			totUang := totUang - hargainventori;
 			maksInv := maksInv + 25; {penambahan 25 terhadap maksimal inventori ketika prosedur ini dijalankan}
-			writeln('Transaksi berhasil, kapasitas inventori bertambah');
+			writeln('Transaksi berhasil, kapasitas inventori bertambah, kapasitas sekarang : ',maksInv);
 		end else
 			writeln ('Transaksi gagal, uang tidak cukup');
 		sudahTidur:=false;
 	end;
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	procedure lihatStatistik(status,listInvMentah,listInvOlahan:strukdat;var sudahTidur:boolean);
-	var
-		i,j: integer;
 	begin
 		//memunculkan data dari status pengguna
-		writeln('Nomor Simulasi | Tanggal | Jumlah Hari Hidup | Jumlah Energi | Kapasitas Maksimum Inventori |Total Bahan Mentah Dibeli | Total Bahan Olahan Dibuat | Total Bahan Olahan Dijual | Total Resep Dijual | Total Pemasukan | Total Pengeluaran | Total Uang');
-		for i:= 0 to (high(status[0]))do
-		begin
-			write(status[0][i],' ');
-		end;
-		writeln;
-			writeln('inventory barang olahan : (Nama | Exp | jumlah)');
-		for i:= 0 to (high(listInvOlahan))do
-		begin
-			for j:=0 to (high(listInvOlahan[i])) do
-			begin
-				write(listInvOlahan[i][j],' ');
-			end;
-			writeln;
-		end;
-		writeln('inventory barang mentah :(Nama | Exp | jumlah)');
-		for i:= 0 to (high(listInvMentah))do
-		begin
-			for j:=0 to (high(listInvMentah[i])) do
-			begin
-				write(listInvMentah[i][j],' ');
-			end;
-			writeln;
-		end;
+		//jangan diubah banyak tab nya
+		writeln('Nomor Simulasi		: ',status[0][0]);
+		writeln('Tanggal			: ',status[0][1]);
+		writeln('Jumlah Hari Hidup	: ',status[0][2]);
+		writeln('Jumlah Energi		: ',status[0][3]);
+		writeln('Maksimum Inventori	: ',status[0][4]);
+		writeln('Bahan Mentah Dibeli	: ',status[0][5]);
+		writeln('Bahan Olahan Dibuat	: ',status[0][6]);
+		writeln('Bahan Olahan Dijual	: ',status[0][7]);
+		writeln('Resep Dijual		: ',status[0][8]);
+		writeln('Total Pemasukan		: ',status[0][9]);
+		writeln('Total Pengeluaran	: ',status[0][10]);
+		writeln('Total Uang		: ',status[0][11]);
+		writeln('/////////////////////////////////////////');
+		//memunculkan inventori
+		lihatInventori(listInvMentah, listInvOlahan,sudahTidur);
 		sudahTidur := false;
 	end;
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -380,7 +404,7 @@ implementation
 							listInvOlahan[high(listInvOlahan)][0] := daftarBahOlahan[i][0];
 							//menghitung tanggal sekarang
 								tanggalSekarang := tanggal;
-								for k := 0 to hariLewat do begin
+								for k := 1 to hariLewat do begin
 									tambahHari(tanggalSekarang);
 								end;
 							listInvOlahan[high(listInvOlahan)][1] := tanggalSekarang;
@@ -403,7 +427,7 @@ implementation
 		sudahTidur := false;
 	end;
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-procedure jualOlahan (var energi, totPemasukan,totBOlahanJual,totUang : longint; var listInvOlahan : strukDat; daftarBahOlahan : strukDat;var sudahTidur:boolean);
+	procedure jualOlahan (var energi, totPemasukan,totBOlahanJual,totUang : longint; var listInvOlahan : strukDat; daftarBahOlahan : strukDat;var sudahTidur:boolean);
 	var
 		i,j : longint;
 		namaOlah : AnsiString;
@@ -439,7 +463,7 @@ procedure jualOlahan (var energi, totPemasukan,totBOlahanJual,totUang : longint;
 		sudahTidur := false;
 	end;
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-procedure jualResep (var energi, totPemasukan,totResepJual,totUang : longint; var listInvOlahan, listInvMentah : strukDat; daftarResep : strukDat;var sudahTidur:boolean);
+	procedure jualResep (var energi, totPemasukan,totResepJual,totUang : longint; var listInvOlahan, listInvMentah : strukDat; daftarResep : strukDat;var sudahTidur:boolean);
 	var
 		i,j, idxBahan : longint;
 		namaResep : AnsiString;
@@ -487,6 +511,21 @@ procedure jualResep (var energi, totPemasukan,totResepJual,totUang : longint; va
 			writeln('Energi tidak mencukupi');
 		end;
 		sudahTidur := false;
+	end;
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	procedure restock(hariLewat : longint; var daftarBahMentah : strukDat);
+	//merestock semua bahan mentah sebanyak 5 di supermarket dengan periode 3 hari sekali
+	//I.S : daftarBahMentah terdefinisi
+	//F.S : semua bahan mentah bertambah isinya sebanyak 5 jika sudah 3 hari
+	var
+		i : longint;
+	begin
+		//cek apakah sudah 3 hari
+		if(hariLewat mod 3 = 0) then begin
+			for i := 0 to high(daftarBahMentah) do begin
+				daftarBahMentah[i][3] := IntToStr(StrToInt(daftarBahMentah[i][3])+5);
+			end;
+		end;
 	end;
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 end.

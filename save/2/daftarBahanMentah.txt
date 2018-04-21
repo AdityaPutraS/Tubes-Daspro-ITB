@@ -1,8 +1,14 @@
-Daging Sapi | 5000 | 10
-Kangkung | 1000 | 10
-Lada | 200 | 100
-Bawang Putih | 500 | 30
-Air | 500 | 100
-Es Krim | 2000 | 10
-Kecap | 400 | 290
-Beras | 500 | 100
+Daging Sapi | 5000 | 2 | 5
+Kangkung | 1000 | 10 | 3
+Lada | 200 | 80 | 6
+Roti | 2000 | 3 | 10
+Selada | 500 | 2 | 50
+Tomat | 300 | 2 | 30
+Telur | 700 | 4 | 50
+Garam | 100 | 100 | 100
+Bawang Putih | 500 | 30 | 10
+Air | 500 | 98 | 50
+Es Krim | 3000 | 10 | 5
+Soda | 3000 | 10 | 10
+Kecap | 400 | 290 | 50
+Beras | 500 | 100 | 50

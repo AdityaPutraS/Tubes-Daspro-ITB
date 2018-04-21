@@ -21,7 +21,6 @@ interface
 	procedure delStrukDat(var arr : strukDat; pos : longint);
 	procedure tambahHari(var tanggal:ansistring);
 	function isKabisat(tahun:integer):boolean;
-	procedure ambilHari(tanggal:ansistring;var sekarang:penanggalan);
 	procedure urut(var list: strukDat);//mengurutkan data pada array
 	function isThere(x : string ; T : strukDat) : Boolean;
 	function idxStrukDat(x : string; dat : strukDat;kolom : longint) : longint;
@@ -115,9 +114,29 @@ implementation
 	//F.S : tanggal menjadi tanggal esok harinya
 	var
 		sekarang:penanggalan;
+		i:integer;
 	begin	
-		ambilHari(tanggal,sekarang);
-			if (sekarang.h=31) and (sekarang.b=12) then
+		i:=1;
+		sekarang.h:=0;sekarang.b:=0;sekarang.t:=0;		//memasukkan hari,bukan,tahun ke variabel sekarang
+		while(i<=length(tanggal)) and (tanggal[i]<>'/') do 
+		begin
+			sekarang.h:=sekarang.h*10+strtoint(tanggal[i]);
+			i+=1;
+		end;
+		i+=1;
+		while(i<=length(tanggal)) and (tanggal[i]<>'/') do 
+		begin
+			sekarang.b:=sekarang.b*10+strtoint(tanggal[i]);
+			i+=1;
+		end;
+		i+=1;
+		while(i<=length(tanggal)) and (tanggal[i]<>'/') do 
+		begin
+			sekarang.t:=sekarang.t*10+strtoint(tanggal[i]);
+			i+=1;
+		end;
+
+			if (sekarang.h=31) and (sekarang.b=12) then		
 			begin
 				sekarang.h:=1;
 				sekarang.b:=1;
@@ -133,32 +152,13 @@ implementation
 				sekarang.h+=1;
 			end;
 		tanggal:='';
-		if (sekarang.h<10) then tanggal+='0'+inttostr(sekarang.h)+'/' else tanggal+=inttostr(sekarang.h)+'/';
+		if (sekarang.h<10) then tanggal+='0'+inttostr(sekarang.h)+'/' else tanggal+=inttostr(sekarang.h)+'/';	//normalisasi format tanggal menjadi hh/bb/tttt
 		if (sekarang.b<10) then tanggal+='0'+inttostr(sekarang.b)+'/' else tanggal+=inttostr(sekarang.b)+'/';
 		if (sekarang.t<10) then tanggal+='000'+inttostr(sekarang.t) 
 		else if (sekarang.t<100) then tanggal+='00'+inttostr(sekarang.t)
 		else if (sekarang.t<1000) then tanggal+='0'+inttostr(sekarang.t) 
 		else tanggal+=inttostr(sekarang.t);
 	end;
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	procedure ambilHari(tanggal:ansistring;var sekarang:penanggalan);
-	//mengubah format tanggal dari string menjadi tipe data penanggalan agar bisa diproses
-	//I.S : tanggal terdefinisi dan format benar
-	//F.S : variable sekarang berisi tipe data penanggalan dari variable tanggal
-	var 
-		temp:string;
-		i:integer;
-	begin
-		i:=0;
-		temp:='';
-			for i:=0 to length(tanggal) do 			//membuang '/' dari penanggalan
-			begin	
-			if (tanggal[i]<>'/') then temp+=tanggal[i];
-			end;
-		val((temp[2]+temp[3]),sekarang.h);				//bagian aneh perlu diteliti
-		val((temp[4]+temp[5]),sekarang.b);
-		val((temp[6]+temp[7]+temp[8]+temp[9]),sekarang.t);
-	end;	
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	procedure urut(var list: strukDat);
 	//mengurutkan strukDat
@@ -210,6 +210,7 @@ implementation
 	end;
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	function idxStrukDat(x : string; dat : strukDat;kolom : longint) : longint;
+	//mencari index dari x di strukDat dat di kolom ke- kolom, jika tidak ada output -1
 	var
 		i,hasil : longint;
 		found : boolean;
@@ -257,6 +258,7 @@ implementation
 	end;
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	function sugesti(s : AnsiString) : AnsiString;
+	//memberi sugesti kepada user, berguna jika user menginput contohnya "belibahaaa", maka fungsi ini akan mencari diantara semua command valid, yang mana yang paling dekat dengan "belibahaaa", output tidak ada jika tidak ada yang dekat.
 	var
 		i,j,k,maksSimilar,similar,idxSimilar: longint;
 		command : miniArr;
