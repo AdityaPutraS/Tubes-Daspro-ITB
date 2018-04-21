@@ -1,11 +1,13 @@
 unit sistem;
 interface
-	uses tambahan;
+	uses tambahan,sysutils;
 	procedure loadFileToArr(namaFile : AnsiString; var dat : strukDat); //meload file dengan nama (namaFile) ke variable dat
 	procedure overWriteArrToFile(namaFile : AnsiString;dat : strukDat); //overwrite isi file dengan isi baru yaitu array dat
-	procedure load(nomor : AnsiString;var daftarBahMentah, listInvMentah, daftarBahOlahan, listInvOlahan, daftarResep, status : strukDat);//meload semua data yang diperlukan
+	procedure load(var sav : strukDatSave);
+	procedure save(sav : strukDatSave);
+	procedure loadToVar(nomor  : longint;sav : strukDatSave;var daftarBahMentah,listInvMentah,daftarBahOlahan,listInvOlahan,daftarResep,status : strukDat); 
+	procedure saveFromVar(nomor : longint;var sav : strukDatSave; daftarBahMentah,listInvMentah,daftarBahOlahan,listInvOlahan,daftarResep,status : strukDat); 
 	procedure loadStatus(status : strukDat;var nomorSim : longint;var tanggal : AnsiString;var hariLewat, energi, maksInv, totBMentahBeli, totBOlahanBuat, totBOlahanJual, totResepJual, totPemasukan, totPengeluaran, totUang : longint);
-	procedure save(nomor : AnsiString;daftarBahMentah, listInvMentah, daftarBahOlahan, listInvOlahan, daftarResep, status : strukDat); //save semua data ke file nya masing masing
 	procedure saveStatus(var status : strukDat;nomorSim : longInt;tanggal : AnsiString;hariLewat, energi, maksInv, totBMentahBeli, totBOlahanBuat, totBOlahanJual, totResepJual, totPemasukan, totPengeluaran, totUang : longint);
 implementation
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -53,17 +55,77 @@ implementation
 		Close(tempFile);
 	end;
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	procedure load(nomor : AnsiString;var daftarBahMentah, listInvMentah, daftarBahOlahan, listInvOlahan, daftarResep, status : strukDat);
+	procedure load(var sav : strukDatSave);
 	//meload semua file yang dibutuhkan, lalu disimpan ke array masing masing
 	//I.S : daftarBahMentah,listInvMentah,daftarBahOlahan,listInvOlahan,daftarResep,status kosong
 	//F.S : semua strukDat tersebut terisi oleh data dari file eksternalnya masing masing
+	var
+		i : longint;
+		daftarBahMentah, listInvMentah, daftarBahOlahan, listInvOlahan, daftarResep, status : strukDat;
+		nomor : AnsiString;
+		temp : saveGame;
 	begin
-		loadFileToArr('save/'+nomor+'/daftarBahanMentah.txt', daftarBahMentah);
-		loadFileToArr('save/'+nomor+'/listInventoriMentah.txt', listInvMentah);
-		loadFileToArr('save/'+nomor+'/daftarBahanOlahan.txt', daftarBahOlahan);
-		loadFileToArr('save/'+nomor+'/listInventoriOlahan.txt', listInvOlahan);
-		loadFileToArr('save/'+nomor+'/daftarResep.txt', daftarResep);
-		loadFileToArr('save/'+nomor+'/statusPengguna.txt',status);
+		setLength(sav,banyakSimulasi);
+		for i := 1 to banyakSimulasi do begin
+			nomor := IntToStr(i);
+			loadFileToArr('save/'+nomor+'/daftarBahanMentah.txt', daftarBahMentah);
+			loadFileToArr('save/'+nomor+'/listInventoriMentah.txt', listInvMentah);
+			loadFileToArr('save/'+nomor+'/daftarBahanOlahan.txt', daftarBahOlahan);
+			loadFileToArr('save/'+nomor+'/listInventoriOlahan.txt', listInvOlahan);
+			loadFileToArr('save/'+nomor+'/daftarResep.txt', daftarResep);
+			loadFileToArr('save/'+nomor+'/statusPengguna.txt',status);
+			temp.daftarBahMentah := daftarBahMentah;
+			temp.listInvMentah := listInvMentah;
+			temp.daftarBahOlahan := daftarBahOlahan;
+			temp.listInvOlahan := listInvOlahan;
+			temp.daftarResep := daftarResep;
+			temp.status := status;
+			loadStatus(temp.status, temp.nomorSim,temp.tanggal,temp.hariLewat,temp.energi,temp.maksInv,temp.totBMentahBeli,temp.totBOlahanBuat,temp.totBOlahanJual,temp.totResepJual,temp.totPemasukan,temp.totPengeluaran,temp.totUang);
+			sav[i-1] := temp;
+		end;
+	end;
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	procedure save(sav : strukDatSave);
+	//menyimpan semua file yang ada ke file eksternalnya masing masing
+	//I.S : sav mungkin kosong, file eksternal sudah ada
+	//F.S : file eksternal berisi data dari sav
+	var
+		i : longint;
+		nomor : AnsiString;
+		temp : saveGame;
+	begin
+		for i := 1 to banyakSimulasi do begin
+		temp := sav[i-1]; //i-1 karena mulai dari 0
+		//menyimpan semua strukDat ke txt nya masing masing
+		nomor := IntToStr(i);
+		//saveStatus(temp.status,temp.nomorSim,temp.tanggal,temp.hariLewat,temp.energi,temp.maksInv,temp.totBMentahBeli,temp.totBOlahanBuat,temp.totBOlahanJual,temp.totResepJual,temp.totPemasukan,temp.totPengeluaran,temp.totUang);
+		overWriteArrToFile('save/'+nomor+'/daftarBahanMentah.txt', temp.daftarBahMentah);
+		overWriteArrToFile('save/'+nomor+'/listInventoriMentah.txt', temp.listInvMentah);
+		overWriteArrToFile('save/'+nomor+'/daftarBahanOlahan.txt', temp.daftarBahOlahan);
+		overWriteArrToFile('save/'+nomor+'/listInventoriOlahan.txt', temp.listInvOlahan);
+		overWriteArrToFile('save/'+nomor+'/daftarResep.txt',temp.daftarResep);
+		overWriteArrToFile('save/'+nomor+'/statusPengguna.txt',temp.status);
+		end;
+	end;
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	procedure loadToVar(nomor  : longint;sav : strukDatSave;var daftarBahMentah,listInvMentah,daftarBahOlahan,listInvOlahan,daftarResep,status : strukDat); 
+	begin
+		daftarBahMentah := sav[nomor-1].daftarBahMentah;
+		listInvMentah := sav[nomor-1].listInvMentah;
+		daftarBahOlahan := sav[nomor-1].daftarBahOlahan;
+		listInvOlahan := sav[nomor-1].listInvOlahan;
+		daftarResep := sav[nomor-1].daftarResep;
+		status := sav[nomor-1].status;
+	end;
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	procedure saveFromVar(nomor : longint;var sav : strukDatSave; daftarBahMentah,listInvMentah,daftarBahOlahan,listInvOlahan,daftarResep,status : strukDat); 
+	begin
+		sav[nomor-1].daftarBahMentah := daftarBahMentah;
+		sav[nomor-1].listInvMentah := listInvMentah;
+		sav[nomor-1].daftarBahOlahan := daftarBahOlahan;
+		sav[nomor-1].listInvOlahan := listInvOlahan;
+		sav[nomor-1].daftarResep := daftarResep;
+		sav[nomor-1].status := status;
 	end;
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	procedure loadStatus(status : strukDat;var nomorSim : longint;var tanggal : AnsiString;var hariLewat, energi, maksInv, totBMentahBeli, totBOlahanBuat, totBOlahanJual, totResepJual, totPemasukan, totPengeluaran, totUang : longint);
@@ -72,8 +134,6 @@ implementation
 	//F.S : semua parameter terdefinisi sesuai isi dari strukDat status terdeifinisi
 	begin
 	//urutannya mengikuti yang di file eksternal statusPengguna.txt
-	//TODO :
-	//	- Tambahin error code
 		val(status[0][0],nomorSim);
 		tanggal := status[0][1];
 		val(status[0][2], hariLewat);
@@ -86,19 +146,6 @@ implementation
 		val(status[0][9], totPemasukan);
 		val(status[0][10], totPengeluaran);
 		val(status[0][11], totUang);
-	end;
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	procedure save(nomor : AnsiString;daftarBahMentah, listInvMentah, daftarBahOlahan, listInvOlahan, daftarResep, status : strukDat);
-	//menyimpan semua isi array ke file eksternal nya masing masing
-	//I.S : daftarBahMentah, listInvMentah, daftarBahOlahan, listInvOlahan, daftarResep, status terdefinisi
-	//F.S : file eksternal berisi data dari masing masing strukDat
-	begin
-		overWriteArrToFile('save/'+nomor+'/daftarBahanMentah.txt', daftarBahMentah);
-		overWriteArrToFile('save/'+nomor+'/listInventoriMentah.txt', listInvMentah);
-		overWriteArrToFile('save/'+nomor+'/daftarBahanOlahan.txt', daftarBahOlahan);
-		overWriteArrToFile('save/'+nomor+'/listInventoriOlahan.txt', listInvOlahan);
-		overWriteArrToFile('save/'+nomor+'/daftarResep.txt', daftarResep);
-		overWriteArrToFile('save/'+nomor+'/statusPengguna.txt',status);
 	end;
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	procedure saveStatus(var status : strukDat;nomorSim : longInt;tanggal : AnsiString;hariLewat, energi, maksInv, totBMentahBeli, totBOlahanBuat, totBOlahanJual, totResepJual, totPemasukan, totPengeluaran, totUang : longint);
@@ -121,5 +168,5 @@ implementation
 		str(totPengeluaran, status[0][10]);
 		str(totUang, status[0][11]);
 	end;
-
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 end.

@@ -1,8 +1,8 @@
-Daging Sapi | 5000 | 10
+Daging Sapi | 5000 | 2
 Kangkung | 1000 | 10
 Lada | 200 | 80
 Bawang Putih | 500 | 30
-Air | 500 | 100
+Air | 500 | 98
 Es Krim | 2000 | 10
 Kecap | 400 | 290
 Beras | 500 | 100

@@ -4,12 +4,19 @@ interface
 	uses sysutils,math;
 	const
 		hargainventori = 100000;//harga yang dibutuhkan untuk upgrade inventori
+		banyakSimulasi = 3;
 	type
 		miniArr = array of AnsiString;
 		strukDat = array of array of AnsiString;
 		penanggalan = record
 		h,b,t:integer;
 		end;
+		saveGame = record
+		nomorSim, hariLewat, energi, maksInv, totBMentahBeli, totBOlahanBuat, totBOlahanJual, totResepJual, totPemasukan, totPengeluaran, totUang : longint;
+		daftarBahMentah, listInvMentah, daftarBahOlahan, listInvOlahan, daftarResep, status : strukDat;
+		tanggal : AnsiString;
+		end;
+		strukDatSave = array of saveGame;
 	function parseString(s : AnsiString):miniArr;
 	procedure delStrukDat(var arr : strukDat; pos : longint);
 	procedure tambahHari(var tanggal:ansistring);

@@ -2,7 +2,7 @@ unit fitur;
 
 interface
 	uses tambahan, sysutils;
-	procedure beliBahan(var daftarBahMentah,listInvMentah :strukDat;listInvOlahan : strukDat;maksInv : longint;var totBMentahBeli,totPengeluaran,energi,totUang : longint;tanggal : AnsiString;var sudahTidur:boolean);
+	procedure beliBahan(var daftarBahMentah,listInvMentah :strukDat;listInvOlahan : strukDat;maksInv : longint;var totBMentahBeli,totPengeluaran,energi,totUang : longint;tanggal : AnsiString;hariLewat : longint;var sudahTidur:boolean);
 	procedure lihatInventori (listInvMentah, listInvOlahan: strukDat;var sudahTidur:boolean);// menampilkan data daftar bahan mentah dan bahan olahan yang tersedia di inventori saat ini terurut membesar menurut nama bahan
 	procedure lihatResep (daftarResep: strukDat;var sudahTidur:boolean); //menampilkan data daftar resep yang tersedia beserta penyusunnya dengan terurut membesar
 	procedure istirahat(var countIst:longint;var energi : longint;var sudahTidur:boolean);//menambah energi sebanyak 1 buah, maksimum istirahat 6 kali sehari, energi maksimum 10
@@ -11,17 +11,18 @@ interface
 	procedure tidur(var tanggal:AnsiString;var hariLewat,energi:longint;daftarBahMentah:strukDat;var listInvMentah,listInvOlahan:strukDat;var sudahTidur:boolean);
 	procedure tambahresep (var daftarResep : strukDat;daftarBahMentah,daftarBahOlahan : strukDat;var sudahTidur:boolean);	
 	procedure upgradeinventori (maksInv,totUang : longint;var sudahTidur:boolean);
-	procedure lihatStatistik(status,listInvMentah,listInvOlahan:strukdat);
-	procedure olahBahan(var energi, totBOlahanBuat:longint;maksInv:longint;daftarBahOlahan,daftarBahMentah:strukDat;var listInvMentah,listInvOlahan:strukDat;tanggal:ansiString);
-	procedure jualOlahan (var energi, totPemasukan,totBOlahanJual,totUang : longint; var listInvOlahan : strukDat; daftarBahOlahan : strukDat);
-	procedure jualResep (var energi, totPemasukan,totResepJual,totUang : longint; var listInvOlahan, listInvMentah : strukDat; daftarResep : strukDat);
+	procedure lihatStatistik(status,listInvMentah,listInvOlahan:strukdat;var sudahTidur:boolean);
+	procedure olahBahan(var energi, totBOlahanBuat:longint;maksInv:longint;daftarBahOlahan,daftarBahMentah:strukDat;var listInvMentah,listInvOlahan:strukDat;tanggal:ansiString;hariLewat : longint;var sudahTidur:boolean);
+	procedure jualOlahan (var energi, totPemasukan,totBOlahanJual,totUang : longint; var listInvOlahan : strukDat; daftarBahOlahan : strukDat;var sudahTidur:boolean);
+	procedure jualResep (var energi, totPemasukan,totResepJual,totUang : longint; var listInvOlahan, listInvMentah : strukDat; daftarResep : strukDat;var sudahTidur:boolean);
 implementation
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////	
-	procedure beliBahan(var daftarBahMentah,listInvMentah :strukDat;listInvOlahan : strukDat;maksInv : longint;var totBMentahBeli,totPengeluaran,energi,totUang : longint;tanggal : AnsiString;var sudahTidur:boolean);
+	procedure beliBahan(var daftarBahMentah,listInvMentah :strukDat;listInvOlahan : strukDat;maksInv : longint;var totBMentahBeli,totPengeluaran,energi,totUang : longint;tanggal : AnsiString;hariLewat : longint;var sudahTidur:boolean);
 	//beli bahan sesuai spek soal.
 	var
-		i,stok,kuantitas,harga,indeksInv : longint;
+		i,j,stok,kuantitas,harga,indeksInv : longint;
 		namaB : AnsiString;
+		tanggalSekarang : AnsiString;
 	begin
 		if(energi > 0) then begin
 			write('Nama Bahan : ');readln(namaB);
@@ -49,7 +50,12 @@ implementation
 								SetLength(listInvMentah[indeksInv],3);
 								//memasukkan ke array listInvMentah
 								listInvMentah[indeksInv][0] := daftarBahMentah[i][0];
-								listInvMentah[indeksInv][1] := tanggal;
+								//menghitung tanggal sekarang
+									tanggalSekarang := tanggal;
+									for j := 0 to hariLewat do begin
+										tambahHari(tanggalSekarang);
+									end;
+								listInvMentah[indeksInv][1] := tanggalSekarang;
 								str(kuantitas,listInvMentah[indeksInv][2]);
 							writeln('Pembelian sukses.');
 						end else begin
@@ -302,7 +308,7 @@ implementation
 		sudahTidur:=false;
 	end;
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	procedure lihatStatistik(status,listInvMentah,listInvOlahan:strukdat);
+	procedure lihatStatistik(status,listInvMentah,listInvOlahan:strukdat;var sudahTidur:boolean);
 	var
 		i,j: integer;
 	begin
@@ -331,13 +337,13 @@ implementation
 			end;
 			writeln;
 		end;
-
+		sudahTidur := false;
 	end;
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	procedure olahBahan(var energi, totBOlahanBuat:longint;maksInv:longint;daftarBahOlahan,daftarBahMentah:strukDat;var listInvMentah,listInvOlahan:strukDat;tanggal:ansiString);
+	procedure olahBahan(var energi, totBOlahanBuat:longint;maksInv:longint;daftarBahOlahan,daftarBahMentah:strukDat;var listInvMentah,listInvOlahan:strukDat;tanggal:ansiString;hariLewat : longint;var sudahTidur:boolean);
 	var
-		i,j,idxBahan:integer;
-		namaOlah:AnsiString;
+		i,j,k,idxBahan:integer;
+		namaOlah, tanggalSekarang:AnsiString;
 	begin
 		if(energi>0) then//pengecekan apakah ada energi 
 		begin 
@@ -372,7 +378,12 @@ implementation
 							setLength(listInvOlahan, length(listInvOlahan)+1);
 							setLength(listInvOlahan[high(listInvOlahan)], 3);
 							listInvOlahan[high(listInvOlahan)][0] := daftarBahOlahan[i][0];
-							listInvOlahan[high(listInvOlahan)][1] := tanggal;
+							//menghitung tanggal sekarang
+								tanggalSekarang := tanggal;
+								for k := 0 to hariLewat do begin
+									tambahHari(tanggalSekarang);
+								end;
+							listInvOlahan[high(listInvOlahan)][1] := tanggalSekarang;
 							listInvOlahan[high(listInvOlahan)][2] := '1';
 						end;
 						totBOlahanBuat += 1;
@@ -389,9 +400,10 @@ implementation
 		end	else begin
 			writeln('Energi tidak mencukupi');//memunculkan pesan kelsalahan jika energi tidak mencukupi 
 		end;
+		sudahTidur := false;
 	end;
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-procedure jualOlahan (var energi, totPemasukan,totBOlahanJual,totUang : longint; var listInvOlahan : strukDat; daftarBahOlahan : strukDat);
+procedure jualOlahan (var energi, totPemasukan,totBOlahanJual,totUang : longint; var listInvOlahan : strukDat; daftarBahOlahan : strukDat;var sudahTidur:boolean);
 	var
 		i,j : longint;
 		namaOlah : AnsiString;
@@ -424,9 +436,10 @@ procedure jualOlahan (var energi, totPemasukan,totBOlahanJual,totUang : longint;
 		end else begin
 			writeln('Energi tidak mencukupi');
 		end;
+		sudahTidur := false;
 	end;
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-procedure jualResep (var energi, totPemasukan,totResepJual,totUang : longint; var listInvOlahan, listInvMentah : strukDat; daftarResep : strukDat);
+procedure jualResep (var energi, totPemasukan,totResepJual,totUang : longint; var listInvOlahan, listInvMentah : strukDat; daftarResep : strukDat;var sudahTidur:boolean);
 	var
 		i,j, idxBahan : longint;
 		namaResep : AnsiString;
@@ -473,6 +486,7 @@ procedure jualResep (var energi, totPemasukan,totResepJual,totUang : longint; va
 		end else begin
 			writeln('Energi tidak mencukupi');
 		end;
+		sudahTidur := false;
 	end;
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 end.
