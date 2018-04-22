@@ -6,9 +6,9 @@ var
 	nomorSim, hariLewat, energi, maksInv, totBMentahBeli, totBOlahanBuat, totBOlahanJual, totResepJual, totPemasukan, totPengeluaran, totUang : longint;
 	daftarBahMentah, listInvMentah, daftarBahOlahan, listInvOlahan, daftarResep, status : strukDat;
 	input,tanggal,inputLuar,sug : AnsiString;
-	sudahTidur : Boolean;
+	sudahTidur,sudahLoad : Boolean;
 begin
-	inputLuar := ''; nomor := 0;
+	inputLuar := ''; nomor := 0;sudahLoad:=false;
 	repeat
 		write('>'); readln(inputLuar);
 		//normalisasi input
@@ -25,9 +25,10 @@ begin
 			if(inputLuar = 'load') then begin
 				writeln('Mengeload semua data yang diperlukan.');
 				load(sav);
-				writeln('Load selesai.');
+				sudahLoad:=True;
+				writeln('Load selesai.');writeln;
 			end else begin
-				if(inputLuar = 'startsimulasi') then begin
+				if(inputLuar = 'startsimulasi') and sudahLoad then begin
 					write('Masukkan No. Simulasi : '); readln(nomor);
 					//validasi nomor simulasi
 					while(not( (nomor >= 1) and (nomor <= banyakSimulasi) )) do begin
@@ -35,10 +36,10 @@ begin
 						write('Masukkan No. Simulasi : '); readln(nomor);
 					end;
 					//nomor sudah benar, mulai simulasi
-					writeln('Mengeload semua variable dari save game nomor ',nomor);
+					writeln('Mengeload semua variable dari simulasi nomor ',nomor,'.');
 					loadToVar(nomor,sav,daftarBahMentah,listInvMentah,daftarBahOlahan,listInvOlahan,daftarResep,status); 
 					loadStatus(status, nomorSim,tanggal, hariLewat, energi, maksInv, totBMentahBeli, totBOlahanBuat, totBOlahanJual, totResepJual, totPemasukan, totPengeluaran, totUang);
-					writeln('Load sukses, simulasi dimulai');
+					writeln('Load sukses, simulasi dimulai.');writeln;
 					//mulai simulasi
 						input := '';
 						sudahTidur:=false;
@@ -47,7 +48,7 @@ begin
 						repeat
 							if(energi > 0) then begin
 								//baca input
-								write('>> '); readln(input);
+								write('>>'); readln(input);
 								input := LowerCase(input);//normalisasi input dengan mengubahnya menjadi huruf kecil semua
 								case input of
 									'stopsimulasi'	 	: writeln('Simulasi berhenti.');
@@ -67,9 +68,9 @@ begin
 									else begin
 										//memberikan sugesti kepada user jika inputnya salah
 										sug := sugesti(input);
-										write('Perintah ',input,' tidak ditemukan.');
+										write('Perintah "',input,'" tidak ditemukan.');
 										if(not(sug = 'tidak ada')) then begin
-											writeln('Mungkin yang anda maksud : ',sug);
+											writeln(' Mungkin yang anda maksud : "',sug,'"');
 										end else begin
 											writeln;
 										end;
@@ -85,20 +86,26 @@ begin
 										if (input<>'tidur') then writeln('Energi habis, Anda hanya dapat tidur.');
 								until(input='tidur');
 								tidur(tanggal,hariLewat,energi,daftarBahMentah,listInvMentah,listInvOlahan,sudahTidur,countIst,countMakan);
-								writeln('Hari telah berganti.');
+								writeln('Hari telah berganti.');writeln;
 							end;
+							writeln;
 						until( (input = 'stopsimulasi') or (hariLewat = 10) );
 						//Pesan output jika program berhenti karena hari lewat
 							if(hariLewat = 10) then begin
-								writeln('Sudah lewat 10 hari,simulasi berhenti.');
+								writeln('Sudah lewat 10 hari, simulasi berhenti.');writeln;
 							end;
 						//tampilkan hasil simulasi
 							lihatStatistik(status,listInvMentah,listInvOlahan,sudahTidur);
 						//save semua variable ke array sav
 							saveStatus(status,nomorSim,tanggal, hariLewat, energi, maksInv, totBMentahBeli, totBOlahanBuat, totBOlahanJual, totResepJual, totPemasukan, totPengeluaran, totUang);
 							saveFromVar(nomor,sav,daftarBahMentah,listInvMentah,daftarBahOlahan,listInvOlahan,daftarResep,status); 
+				end else if (inputLuar = 'startsimulasi') and not sudahLoad then begin
+					writeln('Untuk memulai simulasi lakukan "load" terlebih dahulu.');writeln;
+				end else if (inputLuar = 'help') then begin
+					writeln('Untuk memulai simulasi ketikkan "load", kemudian "startsimulasi".');
+					writeln('Untuk mengakhiri program, ketikkan "exit".');writeln;
 				end else begin
-					writeln('Perintah tidak ditemukan.');
+					writeln('Perintah tidak ditemukan. Ketik "help" untuk bantuan.');writeln;
 				end;
 			end;
 		end;

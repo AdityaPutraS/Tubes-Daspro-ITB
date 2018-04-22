@@ -39,7 +39,7 @@ implementation
 					if((length(listInvMentah)+length(listInvOlahan))<=maksInv) then begin	//high berguna untuk mengembalikkan indeks terakhir dari suatu array
 						val(daftarBahMentah[i][1],harga);
 						if((kuantitas*harga) <= totUang) then begin
-							write('Total bayar : ');writeln(kuantitas*harga);
+							write('Total Bayar : ');writeln(kuantitas*harga);
 							totPengeluaran += (kuantitas * harga);
 							totUang -= (kuantitas*harga);
 							stok -= kuantitas;
@@ -73,7 +73,7 @@ implementation
 				writeln('Pembelian barang gagal karena bahan tidak ada di supermarket.');
 			end;
 		end else begin
-			writeln('Energi tidak mencukupi');
+			writeln('Pembelian barang gagal karena energi tidak mencukupi.');
 		end;
 	end;
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -85,7 +85,7 @@ implementation
 	begin
 		urut(listInvMentah);//mengurutkan invMentah
 		urut(listInvOlahan);//mengurutkan invOlahan
-		writeln('Inventori bahan Mentah : ');
+		writeln('Inventori Bahan Mentah : ');
 		for i:=0 to length(listInvMentah)-1 do //menuliskan ke layar
 		begin
 			write('	');	//Memberi tab
@@ -96,7 +96,7 @@ implementation
 			end;
 			writeln();
 		end;
-		writeln('Inventori bahan olahan');
+		writeln('Inventori Bahan Olahan : ');
 		for i:=0 to length(listInvOlahan)-1 do //menuliskan ke layar
 		begin
 			write('	');	//Memberi tab
@@ -117,7 +117,7 @@ implementation
 	//Algoritma
 	begin
 		urut(daftarResep);// mengurutkan daftarResep
-		writeln('Daftar Resep');
+		writeln('Daftar Resep :');
 		for i:=0 to length(daftarResep)-1 do //menuliskan ke layar
 		begin
 			write('	'); //Memberi tab
@@ -139,13 +139,13 @@ implementation
 			energi += 1;
 			countIst += 1;
 			sudahTidur:=false;
-			writeln('Istirahat berhasil, energi bertambah 1, energi sekarang ',energi);
+			writeln('Istirahat berhasil, energi bertambah 1, energi sekarang sebanyak',energi,'.');
 		end else begin //countIst >= 6 atau energi > 10
 			if (countIst = 6)then
 			begin
-				writeln('Sudah istirahat 6 kali');
+				writeln('Istirahat gagal karena sudah istirahat 6 kali.');
 			end else begin 
-				writeln('Energi mencapai batas maksimum');
+				writeln('Energi mencapai batas maksimum.');
 			end;
 		end;
 	end;
@@ -158,14 +158,14 @@ implementation
 			energi:= energi + 3;
 			countMakan:= countMakan +1;
 			sudahTidur:=false;
-			writeln('Makan berhasil, energi bertambah 3, energi sekarang ',energi);
+			writeln('Makan berhasil, energi bertambah 3, energi sekarang sebanyak',energi,'.');
 		end else begin //countMakan > 3 atau energi > 7
 			if (countMakan = 3 ) then
 			begin
-				writeln('Sudah makan 3 kali');
+				writeln('Makan gagal karena sudah makan 3 kali.');
 			end else begin
 				energi :=10;
-				writeln('Batas maks energi 10');
+				writeln('Energi mencapai batas maksimum.');
 			end;
 		end;
 	end;
@@ -196,7 +196,7 @@ implementation
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	procedure tidur(tanggal:AnsiString;var hariLewat,energi:longint;daftarBahMentah:strukDat;var listInvMentah,listInvOlahan:strukDat;var sudahTidur:boolean;var countIst,countMakan:longint);
 	var
-		i,j,k,durasi,nEff:longint;
+		i,k,durasi,nEff:longint;
 		temp,tanggalSekarang:ansiString;
 	begin
 		if(sudahTidur)then //validasi apakah sudah pernah tidur
@@ -225,7 +225,6 @@ implementation
 			while(i <= nEff) do
 			begin
 				durasi := idxStrukDat(listInvMentah[i][0],daftarBahMentah,0); //durasi berisi indeksnya
-				writeln('mengecek ',listInvMentah[i][0]);
 				if(not(durasi = -1)) then begin
 					//bahan ditemukan di daftarBahMentah
 					durasi := StrToInt(daftarBahMentah[durasi][2]); //durasi berisi durasi dari bahan mentahnya
@@ -240,7 +239,10 @@ implementation
 						i += 1;
 					end;
 				end else begin
-					writeln(listInvMentah[i][0],' merupakan item illegal karena tidak ada di daftar Bahan Mentah.');
+					writeln(listInvMentah[i][0],' merupakan item ilegal karena tidak ada di Daftar Bahan Mentah.');
+					writeln('Item dihapus dari inventori');
+					delStrukDat(listInvMentah,i);
+					nEff -=1;
 				end;
 			end;
 			//merestock daftar bahan mentah, pengecekan apakah sekarang harus di restock atau tidak dilakukan dalam prosedur restock
@@ -267,33 +269,33 @@ implementation
 		SetLength(daftarResep, length(daftarResep)+1);
 		SetLength(daftarResep[High(daftarResep)], 1);//untuk menampung nama resep pada input pertama
 		neff := High(daftarResep); //neff berisi indeks tertinggi sekarang
-		write('Masukkan nama resep : '); readln(namaResep);
+		write('Masukkan Nama Resep : '); readln(namaResep);
 		//validasi apabila nama sudah dimasukkan atau belum
 		if isThere(namaResep, daftarResep)= True then //kondisi if bernilai true apabila ada nama bahan pada daftarResep
 		begin
 			repeat
-				writeln('Nama resep telah dimasukkan sebelumnya. Ulangi !');
-				write('Masukkan nama resep : ');
+				writeln('Nama resep telah dimasukkan sebelumnya. Ulangi!');
+				write('Masukkan Nama Resep : ');
 				readln(namaResep); // input ulang dari user
 			until (not(isThere(namaResep, daftarResep)));
 		end;
 		daftarResep[neff][0] := namaResep;
 		//input jumlah bahan dan bahan-bahannya
-		write('Jumlah bahan = ');
+		write('Jumlah Bahan = ');
 		readln(panjangtemp);
-		SetLength(daftarResep[neff], length(daftarResep[neff])+panjangtemp+2);
-		daftarResep[neff][2]:=inttostr(panjangtemp); //input jumlah bahan
-		if StrToInt(daftarResep[neff][2])<2 then
+		if (panjangtemp<2) then
 		//validasi, jumlah bahan harus >=2
 			begin
 				repeat
 					writeln('Jumlah bahan harus >=2');
-					write('Jumlah bahan = ');
-					readln(daftarResep[neff][2]);
-				until (StrToInt(daftarResep[neff][2])>=2);
+					write('Jumlah Bahan = ');
+					readln(panjangtemp);
+				until (panjangtemp>=2);
 			end;
+		SetLength(daftarResep[neff], length(daftarResep[neff])+panjangtemp+2);
+		daftarResep[neff][2]:=inttostr(panjangtemp); //input jumlah bahan
 		hargabeli:=0; // akan digunakan untuk menyimpan penjumlahan dari semua harga barang mentah
-		writeln('Masukkan bahan-bahan :');
+		writeln('Masukkan Bahan-Bahan :');
 		for i:=3 to high(daftarResep[neff]) do
 		begin
 			write('Bahan ke-',(i-2),' : '); //menghasilkan Bahan ke-n (n : 1,2,3,4,5)
@@ -313,18 +315,19 @@ implementation
 																																		//karena itu akan mereturn 0, sehingga tidak berpengruh
 		end;
 		//input harga jual
-		write('Masukkan harga jual dari makanan');
+		writeln('Total harga bahan-bahan : ',hargabeli);
+		write('Harga Jual : ');
 		readln(daftarResep[neff][1]); //input harga jual
 		//validasi apakah harga jual lebih dari 12.5 persen dari harga beli
 		if (StrToInt(daftarResep[neff][1]) <= 1.25*hargabeli) then
 		begin
 			repeat
-				writeln ('Harga jual harus minimal 12.5 persen lebih daripada total harga bahan mentah ! ');
-				write('Masukkan harga jual dari makanan : ');
+				writeln ('Harga jual harus minimal 12.5% lebih daripada total harga bahan-bahan! ');
+				write('Harga Jual : ');
 				readln(daftarResep[neff][1]); //input harga jual
 			until (StrToInt(daftarResep[neff][1]) >= 1.25*hargabeli);
 		end;
-		writeln('Resep berhasi di masukkan');
+		writeln('Resep berhasil dimasukkan.');
 		sudahTidur:=false;
 	end;
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -336,18 +339,24 @@ implementation
 		begin
 			totUang := totUang - hargainventori;
 			maksInv := maksInv + 25; {penambahan 25 terhadap maksimal inventori ketika prosedur ini dijalankan}
-			writeln('Transaksi berhasil, kapasitas inventori bertambah, kapasitas sekarang : ',maksInv);
+			writeln('Transaksi berhasil, kapasitas inventori bertambah, kapasitas sekarang : ',maksInv,'.');
 		end else
 			writeln ('Transaksi gagal, uang tidak cukup');
 		sudahTidur:=false;
 	end;
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	procedure lihatStatistik(status,listInvMentah,listInvOlahan:strukdat;var sudahTidur:boolean);
+	var
+		temp:ansiString;
+		i:integer;
 	begin
 		//memunculkan data dari status pengguna
 		//jangan diubah banyak tab nya
 		writeln('Nomor Simulasi		: ',status[0][0]);
-		writeln('Tanggal			: ',status[0][1]);
+		writeln('Tanggal Simulasi	: ',status[0][1]);
+		temp:= status[0][1];
+		for i:=1 to strtoint(status[0][2]) do tambahHari(temp);
+		writeln('Tanggal Hari Ini	: ',temp);
 		writeln('Jumlah Hari Hidup	: ',status[0][2]);
 		writeln('Jumlah Energi		: ',status[0][3]);
 		writeln('Maksimum Inventori	: ',status[0][4]);
@@ -368,11 +377,14 @@ implementation
 	var
 		i,j,k,idxBahan:integer;
 		namaOlah, tanggalSekarang:AnsiString;
+		statusCari : AnsiString;
 	begin
 		if(energi>0) then//pengecekan apakah ada energi 
 		begin 
-			write('Masukkan nama olahan :');
+			write('Masukkan Nama Olahan : ');
 			readln(namaOlah);
+			//normalisasi
+			namaOlah := LowerCase(namaOlah);
 			energi -= 1;
 			i := idxStrukDat(namaOlah,daftarBahOlahan,0);
 			if(not(i = -1)) then begin
@@ -391,38 +403,54 @@ implementation
 							if(listInvMentah[idxBahan][2] = '0') then
 								delStrukDat(listInvMentah,idxBahan);
 						end;
-						//masukan ke invBahanOlahan
-						//cek apakah sudah ada di invBahanOlahan
-						j := idxStrukDat(daftarBahOlahan[i][0],listInvOlahan,0);
-						if(not(j = -1)) then begin
-						//sudah ada
-							listInvOlahan[j][2] := IntToStr(StrToInt(listInvOlahan[j][2])+1);
-						end else begin
-						//belum ada
-							setLength(listInvOlahan, length(listInvOlahan)+1);
-							setLength(listInvOlahan[high(listInvOlahan)], 3);
-							listInvOlahan[high(listInvOlahan)][0] := daftarBahOlahan[i][0];
-							//menghitung tanggal sekarang
+						//menghitung tanggal sekarang
 								tanggalSekarang := tanggal;
 								for k := 1 to hariLewat do begin
 									tambahHari(tanggalSekarang);
 								end;
-							listInvOlahan[high(listInvOlahan)][1] := tanggalSekarang;
-							listInvOlahan[high(listInvOlahan)][2] := '1';
-						end;
+						//masukan ke invBahanOlahan
+							//cek apakah sudah ada 
+							j := 0;
+							statusCari := 'tidak ada';
+							while( (j <= high(listInvOlahan)) and (not(statusCari = 'ketemu, tanggal sama'))) do begin
+								if(LowerCase(listInvOlahan[j][0]) = namaOlah) then begin
+									//ketemu, asumsi tanggalnya beda
+									statusCari := 'ketemu, tanggal beda';
+									//cek tanggal nya sekarang
+									if(listInvOlahan[j][1] = tanggalSekarang) then begin
+										statusCari := 'ketemu, tanggal sama';
+									end else begin
+										j += 1;
+									end;
+								end else begin
+									j += 1;
+								end;
+							end;
+							//masukkan berdasarkan statusnya
+							if( (statusCari = 'tidak ada') or (statusCari = 'ketemu, tanggal beda') ) then begin
+								//tambah baru di paling bawah
+								setLength(listInvOlahan, length(listInvOlahan)+1);
+								setLength(listInvOlahan[high(listInvOlahan)], 3);
+								listInvOlahan[high(listInvOlahan)][0] := daftarBahOlahan[i][0];
+								listInvOlahan[high(listInvOlahan)][1] := tanggalSekarang;
+								listInvOlahan[high(listInvOlahan)][2] := '1';
+							end else begin
+								//ada yang tanggalnya sama, tinggal tambah jumlahnya
+								listInvOlahan[j][2] := IntToStr(StrToInt(listInvOlahan[j][2])+1);
+							end;
 						totBOlahanBuat += 1;
-						writeln('Olah bahan sukses');
+						writeln('Olah bahan sukses.');
 					end else begin
-						writeln('Inventori tidak muat');
+						writeln('Inventori tidak muat.');
 					end;
 				end else begin
-					writeln('Bahan mentah kurang');
+					writeln('Bahan mentah kurang.');
 				end;
 			end else begin
-				writeln('Nama bahan olahan tidak ditemukan');
+				writeln('Nama bahan olahan tidak ditemukan.');
 			end;
 		end	else begin
-			writeln('Energi tidak mencukupi');//memunculkan pesan kelsalahan jika energi tidak mencukupi 
+			writeln('Energi tidak mencukupi.');//memunculkan pesan kelsalahan jika energi tidak mencukupi 
 		end;
 		sudahTidur := false;
 	end;
@@ -433,7 +461,7 @@ implementation
 		namaOlah : AnsiString;
 	begin
 		if(energi > 0) then begin
-			write('Masukan nama bahan olahan : ');
+			write('Masukan Nama Bahan Olahan : ');
 			readln(namaOlah);
 			energi -= 1; //mengurangi energi
 			i:=idxStrukDat(namaOlah, listInvOlahan, 0);
@@ -449,16 +477,16 @@ implementation
 					totPemasukan += StrToInt(daftarBahOlahan[j][1]);	//menambah pemasukan
 					totUang += StrToInt(daftarBahOlahan[j][1]);
 					totBOlahanJual += 1;//menambah jumlah bahan olahan dijual
-					writeln('Sukses jual bahan olahan');
+					writeln('Sukses menjual bahan olahan.');
 				end else begin
 					//jaga jaga aja
-					writeln('Tidak bisa menemukan bahan olahan di daftar bahan olahan untuk dicari harganya');
+					writeln('Tidak bisa menemukan bahan olahan di daftar bahan olahan untuk dicari harganya.');
 				end;
 			end else begin
-				writeln('Bahan olahan tidak ditemukan di inventori');
+				writeln('Bahan olahan tidak ditemukan di inventori.');
 			end;
 		end else begin
-			writeln('Energi tidak mencukupi');
+			writeln('Energi tidak mencukupi.');
 		end;
 		sudahTidur := false;
 	end;
@@ -469,7 +497,7 @@ implementation
 		namaResep : AnsiString;
 	begin
 		if(energi > 0) then begin
-			write('Masukan nama resep : ');
+			write('Masukan Nama Resep : ');
 			readln(namaResep);
 			energi -= 1;
 			i := idxStrukDat(namaResep, daftarResep,0);
@@ -500,15 +528,15 @@ implementation
 					totPemasukan += StrToInt(daftarResep[i][1]);
 					totUang += StrToInt(daftarResep[i][1]);
 					totResepJual += 1;
-					writeln('Jual resep berhasil');
+					writeln('Jual resep berhasil.');
 				end else begin
-					writeln('Bahan untuk membuat resep kurang');
+					writeln('Bahan untuk membuat resep kurang.');
 				end;
 			end else begin
-				writeln('Resep tidak ditemukan');
+				writeln('Resep tidak ditemukan.');
 			end;
 		end else begin
-			writeln('Energi tidak mencukupi');
+			writeln('Energi tidak mencukupi.');
 		end;
 		sudahTidur := false;
 	end;
