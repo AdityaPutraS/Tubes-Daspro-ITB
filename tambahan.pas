@@ -265,11 +265,12 @@ implementation
 	begin
 		//inisialisasi command
 		setLength(command,15);
-		command[0] := 'belibahan';command[1] := 'save';command[2] := 'cariresep';
-		command[3] := 'tidur';command[4] := 'lihatinventori';command[5] := 'lihatresep';
-		command[6] := 'istirahat';command[7] := 'makan';command[8] := 'tambahresep';
-		command[9] := 'upgradeinventori';command[10] := 'lihatstatistik';command[11] := 'olahbahan';
-		command[12] := 'jualbahan';command[13] := 'jualresep';command[14] := 'stopsimulasi';
+		//list semua command dalam simulasi
+		command[0] := 'stopsimulasi';command[1] := 'belibahan';command[2] := 'olahbahan';
+		command[3] := 'jualolahan';command[4] := 'jualresep';command[5] := 'makan';
+		command[6] := 'istirahat';command[7] := 'tidur';command[8] := 'lihatstatistik';
+		command[9] := 'lihatinventori';command[10] := 'lihatresep';command[11] := 'cariresep';
+		command[12] := 'tambahresep';command[13] := 'upgradeinventori';
 		//mulai algoritma
 		idxSimilar := -1;
 		maksSimilar := 3;

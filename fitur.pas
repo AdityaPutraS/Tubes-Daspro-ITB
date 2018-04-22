@@ -20,6 +20,8 @@ implementation
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////	
 	procedure beliBahan(var daftarBahMentah,listInvMentah :strukDat;listInvOlahan : strukDat;maksInv : longint;var totBMentahBeli,totPengeluaran,energi,totUang : longint;tanggal : AnsiString;hariLewat : longint;var sudahTidur:boolean);
 	//beli bahan sesuai spek soal.
+	//I.S : daftarBahMentah dan variable lainnya terdefinisi, mungkin kosong
+	//F.S : listInvMentah berisi bahan yang dibeli (jika berhasil beli)
 	var
 		i,j,stok,kuantitas,harga,indeksInv : longint;
 		namaB : AnsiString;
@@ -78,7 +80,9 @@ implementation
 	end;
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	procedure lihatInventori (listInvMentah, listInvOlahan: strukDat;var sudahTidur:boolean);
-		//Kamuslokal
+	//menampilkan inventori ke user
+	//I.S : inventori terisi, mungkin kosong
+	//F.S : di layar ada isi dari inventori
 	var
 		i,j:integer; //increment
 	//Algoritma
@@ -111,7 +115,9 @@ implementation
 	end;
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	procedure lihatResep (daftarResep: strukDat;var sudahTidur:boolean);
-	//Kamuslokal
+	//menampilkan semua resep yang ada ke user
+	//I.S : daftar resep terisi, mungkin kosong
+	//F.S : di layar ada daftar resep yang ada
 	var
 		i,j:integer; //increment
 	//Algoritma
@@ -132,6 +138,9 @@ implementation
 	end;
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	procedure istirahat(var countIst:longint;var energi : longint;var sudahTidur:boolean);
+	//istirahat, dan menambah 1 energi user, maks 6 kali istirahat dalam sehari
+	//I.S : banyak istirahat disimpan di countIst, mungkin lebih dari 6
+	//F.S : energi bertambah 1 jika sukses
 	//algoritma 
 	begin
 		if (countIst<6) and (energi < 10) then
@@ -139,7 +148,7 @@ implementation
 			energi += 1;
 			countIst += 1;
 			sudahTidur:=false;
-			writeln('Istirahat berhasil, energi bertambah 1, energi sekarang sebanyak',energi,'.');
+			writeln('Istirahat berhasil, energi bertambah 1, energi sekarang sebanyak ',energi,'.');
 		end else begin //countIst >= 6 atau energi > 10
 			if (countIst = 6)then
 			begin
@@ -151,14 +160,16 @@ implementation
 	end;
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	procedure makan (var countMakan, energi : longint;var sudahTidur:boolean);
-	//algoritma
+	//makan, lalu menambah energi sebanyak 3, maks 3 kali makan dalam sehari
+	//I.S : banyak makan dalam sehari disimpan di countMakan, mungkin lebih dari 3
+	//F.S : energi bertambah 3 jika sukses;
 	begin
 		if (countMakan<3) and (energi + 3 <= 10) then
 		begin
 			energi:= energi + 3;
 			countMakan:= countMakan +1;
 			sudahTidur:=false;
-			writeln('Makan berhasil, energi bertambah 3, energi sekarang sebanyak',energi,'.');
+			writeln('Makan berhasil, energi bertambah 3, energi sekarang sebanyak ',energi,'.');
 		end else begin //countMakan > 3 atau energi > 7
 			if (countMakan = 3 ) then
 			begin
@@ -172,6 +183,8 @@ implementation
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	procedure cariResep(daftarResep:strukDat;var sudahTidur:boolean);
 	//cari resep dari file daftarResep
+	//I.S : daftarResep terdefinisi
+	//F.S : ditampilkan di layar hasil pencarian, output tidak ketemu jika tidak ada
 	var
 		namaR:ansiString;
 		i,j:longint;
@@ -195,6 +208,9 @@ implementation
 	end;
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	procedure tidur(tanggal:AnsiString;var hariLewat,energi:longint;daftarBahMentah:strukDat;var listInvMentah,listInvOlahan:strukDat;var sudahTidur:boolean;var countIst,countMakan:longint);
+	//tidur, lalu menghapus semua bahan kadaluarsa, serta merestock jika sudah waktunya, dan merubah energi menjadi 10
+	//I.S : semua variable terdefinisi
+	//F.S : bahan kadaluarsa hilang, stok di supermarket terisi lagi jika sudah 3 hari,energi menjadi 10
 	var
 		i,k,durasi,nEff:longint;
 		temp,tanggalSekarang:ansiString;
@@ -259,7 +275,9 @@ implementation
 	end;
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	procedure tambahresep (var daftarResep : strukDat;daftarBahMentah,daftarBahOlahan : strukDat;var sudahTidur:boolean);
-	//KAMUS LOKAL
+	//menambah resep baru ke daftar resep
+	//I.S : daftar resep terdefinisi
+	//F.S : terdapat resep baru di daftar resep jika tambahResep sukses, output pesan kegagalan jika gagal
 	var
 		neff, i ,hargabeli,panjangtemp : longint; //menyimpan harga bahan mentah total untuk membuat resep
 		namaResep : AnsiString;
@@ -332,13 +350,16 @@ implementation
 	end;
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	procedure upgradeinventori (maksInv,totUang : longint;var sudahTidur:boolean);
+	//menambah inventori sebanyak 25
+	//I.S : totUang terdefiisi, mungkin tidak cukup
+	//F.S : maksimal inventori bertambah 25 jika sukses
 	const
 		hargainventori = 100000;//harga yang dibutuhkan untuk upgrade inventori
 	begin
 		if (hargainventori < totUang) then
 		begin
 			totUang := totUang - hargainventori;
-			maksInv := maksInv + 25; {penambahan 25 terhadap maksimal inventori ketika prosedur ini dijalankan}
+			maksInv := maksInv + 25; //penambahan 25 terhadap maksimal inventori ketika prosedur ini dijalankan
 			writeln('Transaksi berhasil, kapasitas inventori bertambah, kapasitas sekarang : ',maksInv,'.');
 		end else
 			writeln ('Transaksi gagal, uang tidak cukup');
@@ -346,6 +367,9 @@ implementation
 	end;
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	procedure lihatStatistik(status,listInvMentah,listInvOlahan:strukdat;var sudahTidur:boolean);
+	//menampilkan semua statistik ke layar, serta barang apa saja yang ada di inventori
+	//I.S : semua variable terdefinisi
+	//F.S : di layar user akan tampil data data tentang simulasi
 	var
 		temp:ansiString;
 		i:integer;
@@ -374,6 +398,9 @@ implementation
 	end;
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	procedure olahBahan(var energi, totBOlahanBuat:longint;maksInv:longint;daftarBahOlahan,daftarBahMentah:strukDat;var listInvMentah,listInvOlahan:strukDat;tanggal:ansiString;hariLewat : longint;var sudahTidur:boolean);
+	//mengolah bahan mentah menjadi bahan olahan
+	//I.S : semua variable terdefinisi, bahan baku mungkin tidak cukup
+	//F.S : menambah bahan yang telah di olah ke inventori olahan
 	var
 		i,j,k,idxBahan:integer;
 		namaOlah, tanggalSekarang:AnsiString;
@@ -456,6 +483,9 @@ implementation
 	end;
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	procedure jualOlahan (var energi, totPemasukan,totBOlahanJual,totUang : longint; var listInvOlahan : strukDat; daftarBahOlahan : strukDat;var sudahTidur:boolean);
+	//menjual bahan olahan
+	//I.S : nama bahan mungkin tidak ada di daftarBahan, serta mungkin tidak ada di inventori
+	//F.S : uang bertambah jika jualOlahan sukses
 	var
 		i,j : longint;
 		namaOlah : AnsiString;
@@ -492,6 +522,9 @@ implementation
 	end;
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	procedure jualResep (var energi, totPemasukan,totResepJual,totUang : longint; var listInvOlahan, listInvMentah : strukDat; daftarResep : strukDat;var sudahTidur:boolean);
+	//mengolah bahan olahan sesuai resep, lalu menjualnya
+	//I.S : semua variable terdefinisi, resep mungkin tidak ada, bahan mungkin kurang
+	//F.S : uang bertambah jika penjualan sukses
 	var
 		i,j, idxBahan : longint;
 		namaResep : AnsiString;

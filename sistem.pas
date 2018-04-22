@@ -109,6 +109,9 @@ implementation
 	end;
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	procedure loadToVar(nomor  : longint;sav : strukDatSave;var daftarBahMentah,listInvMentah,daftarBahOlahan,listInvOlahan,daftarResep,status : strukDat); 
+	//mengeload semua variable strukDat dari save game ke- nomor
+	//I.S : sav terdefinisi isinya
+	//F.S : semua strukDat telah terisi datanya masing masing
 	begin
 		daftarBahMentah := sav[nomor-1].daftarBahMentah;
 		listInvMentah := sav[nomor-1].listInvMentah;
@@ -119,6 +122,9 @@ implementation
 	end;
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	procedure saveFromVar(nomor : longint;var sav : strukDatSave; daftarBahMentah,listInvMentah,daftarBahOlahan,listInvOlahan,daftarResep,status : strukDat); 
+	//menyimpan data dari strukDat ke save game ke- nomor
+	//I.S : semua strukDat terdefinisi
+	//F.S : save game terupdate
 	begin
 		sav[nomor-1].daftarBahMentah := daftarBahMentah;
 		sav[nomor-1].listInvMentah := listInvMentah;
@@ -153,8 +159,6 @@ implementation
 	//I.S : semua parameter terdefinisi
 	//F.S : strukDat status terisi data baru dari parameter
 	begin
-	//TODO :
-	//	- Tambahin error code
 		str(nomorSim, status[0][0]);
 		status[0][1] := tanggal;
 		str(hariLewat, status[0][2]);
